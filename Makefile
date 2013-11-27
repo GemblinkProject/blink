@@ -13,7 +13,7 @@ LIBS3=$(subst $(space),$(comma),$(LIBS2))
 
 all:
 	find . | egrep "[.]java$$" > file.list
-	javac -classpath $(LIBS3):src/. @file.list
+	javac -XDignore.symbol.file -classpath $(LIBS3):src/. @file.list
 
 #echo $(LIBS3)
 # javac -classpath $(LIBS3):src/. src/blink/*.java 
