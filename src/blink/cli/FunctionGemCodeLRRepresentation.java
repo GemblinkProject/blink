@@ -33,80 +33,181 @@ public class FunctionGemCodeLRRepresentation extends Function {
 		if (params.size() == 3) {
 			Gem G = (Gem) params.get(0);
     		
-			GemColor missedColor = GemColor.getByNumber(((Number)params.get(1)).intValue());
+			GemColor missingColor = GemColor.getByNumber(((Number)params.get(1)).intValue());
     		GemColor smallestColor = GemColor.getByNumber(((Number)params.get(2)).intValue());
 			
 			ArrayList<GemVertex> gemOddVertexList = G.getOddVertices(); //DEBUG getVertex
-			ArrayList<GemVertex> gemAllVertexList = G.getOddVertices(); //DEBUG getVertex
 			
-			HashMap<GemVertex, Integer> edgeMark = new HashMap<GemVertex, Integer>(); //DEBUG Vertices marcados
-    		
-			for (GemVertex v : gemAllVertexList) {
-     	  		edgeMark.put(v, new Integer(0));
-    		}
+			for(GemVertex startVertex : gemOddVertexList)
+			{
+				
+				this.breadFirstSearch(G, startVertex, startVertex.getNeighbour(missingColor), missingColor, smallestColor);
+			}
 			
-			int numEdges = 3 * G.getNumVertices();
 			
-			GemVertex[] vertexQuee = new GemVertex[numEdges];
-			
-			for (GemVertex v : gemOddVertexList) {
-     	  		
-    		}
     		
     		
 		}
 		return null; //BUGBUG
 	}
 	
-	
-	private HashMap<GemVertex, GemColor> breadFirstSearch(Gem gem, GemVertex startVertex, GemColor missingColor, GemColor smallestColor)
+	//BUGBUG checar vertices marcados
+	private HashMap<GemVertex, GemColor> breadFirstSearch(Gem gem, GemVertex startVertex, GemVertex endVertex, GemColor missingColor, GemColor smallestColor)
 	{
-		HashMap<HashMap<GemVertex, GemColor>, Boolean>  edgeMarked = new HashMap<HashMap<GemVertex, GemColor>, Boolean>();
+		HashMap<GemVertex, Boolean>  vertexMarked = new HashMap<GemVertex, Boolean>();
 		HashMap<GemVertex, GemColor> vertexColor = new HashMap<GemVertex, GemColor>();
-		
-		HashMap<GemVertex, Integer> vertexDistance = new HashMap<GemVertex, Integer>();
-		
+		HashMap<GemVertex, String> vertexDirection = new HashMap<GemVertex, String>();
+				
 		
 		GemVertex[] queue = new GemVertex[gem.getNumVertices()];
 		int queueIndex = 0;
 		
 		GemVertex current = startVertex;
-		GemColor[] listColors = GemColor.getComplementColors(missingColor);
+		ArrayList<GemColor> listColors = new ArrayList<GemColor>();
+		
+		for(GemColor cor : GemColor.getComplementColors(missingColor))
+		{
+			if(cor.getNumber() != smallestColor.getNumber())
+			{
+				listColors.add(cor);
+			}
+		}
 		
 		queue[queueIndex++] = current.getNeighbour(smallestColor);
 		vertexColor.put(current, smallestColor);
+		GemColor lastColor = smallestColor;
 		
-		while(queueIndex > 0)
+		while(queueIndex > 0 || current.equals(endVertex))
 		{
-			current = queue[queueIndex--];
-			if(vertexDistance.containsKey(current)) // if why?
+			GemVertex atual = queue[queueIndex--];
+			
+			
+			for(GemColor cor : listColors)
 			{
-				for(GemColor cor : listColors)
+				if(cor.getNumber() != smallestColor.getNumber())
 				{
-					if(cor != smallestColor) //se já estiver markado
+					if(current.hasEvenLabel()) //clockwise
 					{
-						if(vertexDistance.get(current.getNeighbour(cor)).intValue() >
-							vertexDistance.get(current).intValue() + 1)
+						if(lastColor.getNumber() > cor.getNumber())
 						{
-							vertexDistance.put(current.getNeighbour(cor)
-									,vertexDistance.get(current).intValue() + 1);
+							queue[queueIndex++] = current.getNeighbour(cor);
+							lastColor = cor;
+							vertexDirection.put(current, "-");
+							current = current.getNeighbour(cor);
+							break;
+						}
+						else
+						{
+							if(isVertexColorTheBiggestOne(listColors, lastColor))
+							{
+								GemColor modColor = getSmallestColorFromList(listColors);
+								queue[queueIndex++] = current.getNeighbour(modColor);
+								lastColor = modColor;
+								vertexDirection.put(current, "-");
+								current = current.getNeighbour(modColor);
+								break;
+							}
 							
-							vertexColor.put(current.getNeighbour(cor), cor);
+						}
+					}
+					else if(current.hasOddLabel()) //anticlockwise - maior para o menor
+					{
+						if(lastColor.getNumber() > cor.getNumber())
+						{
+							queue[queueIndex++] = current.getNeighbour(cor);
+							lastColor = cor;
+							vertexDirection.put(current, "|");
+							current = current.getNeighbour(cor);
+							break;
+						}
+						else
+						{
+							if(isVertexColorTheSmallestOne(listColors, lastColor))
+							{
+								GemColor modColor = getBiggestColorFromList(listColors);
+								queue[queueIndex++] = current.getNeighbour(modColor);
+								lastColor = modColor;
+								vertexDirection.put(current, "|");
+								current = current.getNeighbour(modColor);
+								break;
+							}
 							
-							HashMap<GemVertex, GemColor> toInsert = new HashMap<GemVertex, GemColor>();
-							toInsert.put(current, cor);
-							
-							edgeMarked.put(toInsert, true);
 						}
 					}
 				}
 			}
-			else
-			{
-			
-			}
 		}
 		return vertexColor;
+	}
+	
+	private boolean isVertexColorTheBiggestOne(ArrayList<GemColor> listColors, GemColor vertexColor)
+	{
+		boolean isMaior = true;
+		for(GemColor cor : listColors)
+		{
+			if(cor.getNumber() > vertexColor.getNumber())
+			{
+				isMaior = false;
+				break;
+			}
+		}
+		return isMaior;
+	}
+	
+	private boolean isVertexColorTheSmallestOne(ArrayList<GemColor> listColors, GemColor vertexColor)
+	{
+		boolean isMenor = true;
+		for(GemColor cor : listColors)
+		{
+			if(cor.getNumber() < vertexColor.getNumber())
+			{
+				isMenor = false;
+				break;
+			}
+		}
+		return isMenor;
+	}
+	
+	private GemColor getBiggestColorFromList(ArrayList<GemColor> listColors)
+	{
+		GemColor current = null;
+		for(GemColor cor : listColors)
+		{
+			if(current == null)
+			{
+				current = cor;
+			}
+			else
+			{
+				if(cor.getNumber() > current.getNumber())
+				{
+					current = cor;
+					break;
+				}
+			}
+		}
+		return current;
+	}
+	
+	private GemColor getSmallestColorFromList(ArrayList<GemColor> listColors)
+	{
+		GemColor current = null;
+		for(GemColor cor : listColors)
+		{
+			if(current == null)
+			{
+				current = cor;
+			}
+			else
+			{
+				if(cor.getNumber() < current.getNumber())
+				{
+					current = cor;
+					break;
+				}
+			}
+		}
+		return current;
 	}
 }
 
