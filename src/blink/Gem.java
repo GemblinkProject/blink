@@ -309,6 +309,7 @@ public class Gem implements Cloneable, Comparable {
             stack[stackPtr++] = v0;
             
             while (stackPtr > 0) {
+                // FIXME: dfs pode encontrar um caminho pelas outras cores para a 4a cor
                 GemVertex v = stack[--stackPtr];
                 int neighbourBit = (~v.getLabel() & 1);
                 for (GemColor c : colors) {
@@ -323,6 +324,7 @@ public class Gem implements Cloneable, Comparable {
                 if (!u.getFlag()) {
                     u.setFlag(true);
                     u.setLabel(v.getLabel() ^ 1);
+                    System.out.println(v.getLabel() + " " + u.getLabel());
                     stack[stackPtr++] = u;
                 }
             }

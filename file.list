@@ -260,6 +260,7 @@
 ./src/blink/BlinkCR.java
 ./src/blink/EPSCatalog.java
 ./src/blink/PanelMapViewer.java
+./src/blink/PlanarFace.java
 ./src/blink/ValidateBlinkToGem.java
 ./src/blink/SearchByTwistor.java
 ./src/blink/Gem.java

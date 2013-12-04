@@ -1,14 +1,16 @@
 package blink;
 
-import java.util.ArrayList;
-
 public class PlanarEdge {
     public PlanarVertex toVertex;
+    public PlanarFace toFace;
     public PlanarEdge counterEdge;
     public PlanarEdge nextEdge;
     
     public PlanarEdge(PlanarVertex toVertex) {
         this.toVertex = toVertex;
+    }
+    public PlanarEdge(PlanarFace toFace) {
+        this.toFace = toFace;
     }
     
     public void setCounterEdge(PlanarEdge e) {
@@ -20,5 +22,11 @@ public class PlanarEdge {
     }
     public PlanarEdge nextEdgeOverFace() {
         return this.counterEdge.nextEdge;
+    }
+    public PlanarVertex fromVertex() {
+        return this.counterEdge.toVertex;
+    }
+    public PlanarFace fromFace() {
+        return this.counterEdge.toFace;
     }
 }
