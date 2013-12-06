@@ -286,6 +286,19 @@ public class PanelGemViewer extends JPanel {
             
             int maxSize = 0;
             GemVertex[][][] bigons = gem.getBigons(colors[0], colors[1], colors[2]);
+            
+            HashMap<GemVertex, HashMap<GemColor, Integer>> faces = new HashMap<GemVertex, HashMap<GemColor, Integer>>();
+            for (GemVertex v: gem.getVertices()) {
+                faces.put(v, new HashMap<GemColor, Integer>());
+            }
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < bigons[i].length; ++j) {
+                    for (int k = 0; k < bigons[i][j].length; ++k) {
+                        faces.get(bigons[i][j][k]).put(colors[i], new Integer(j));
+                    }
+                }
+            }
+            
             for (int i = 0; i < 3; ++i) {
             	sb.append("Bigons " + colors[i].getNumber() + " - " + colors[(i+1)%3].getNumber() + ":\n");
 		HashMap<Integer, Integer> amount = new HashMap<Integer, Integer>();
@@ -296,8 +309,13 @@ public class PanelGemViewer extends JPanel {
 			if (lastInteger != null) last = lastInteger.intValue();
 			amount.put(new Integer(bigons[i][j].length), new Integer(last+1));
             		sb.append(colorPairs[colors[i].getNumber()][colors[(i+1)%3].getNumber()] + "" + j + ": ");
+            		char[] bigonPair = new char[2];
+            		bigonPair[0] = colorPairs[colors[(i+2)%3].getNumber()][colors[i].getNumber()];
+            		bigonPair[1] = colorPairs[colors[(i+1)%3].getNumber()][colors[(i+2)%3].getNumber()];
             		for (int k = 0; k < bigons[i][j].length; ++k) {
-            			sb.append(bigons[i][j][k].getLabel() + ", ");
+            			sb.append(bigons[i][j][k].getLabel() + " ");
+            			int counterFace = faces.get(bigons[i][j][(k+1)%bigons[i][j].length]).get(colors[(i+(k%2))%3]).intValue();
+            			sb.append("[" + bigonPair[k%2] + counterFace + "] ");
             		}
             		sb.append("size: " + bigons[i][j].length + "\n");
     	            maxSize = Math.max(maxSize, bigons[i][j].length);

@@ -48,7 +48,7 @@ public class FunctionRandomGemFromWheel extends Function {
 			N = ((Number)params.get(0)).intValue();
   			if( params.size() >= 2 && params.get(1) instanceof Number ) {
 	    	    V = ((Number)params.get(1)).intValue();
-	    	    if( params.size() >= 3 && params.get(1) instanceof Number ) {
+	    	    if( params.size() >= 3 && params.get(2) instanceof Number ) {
 	    	        F = ((Number)params.get(2)).intValue();
 	    	    } else if (params.size() == 2) {
 	    	        F = V;
@@ -59,11 +59,11 @@ public class FunctionRandomGemFromWheel extends Function {
 		} else throw new EvaluationException("You have to pass N as parameter");
 		
 		if( params.size() == 4 && params.get(3) instanceof Number) {
-			rand = new Random(((Number)params.get(1)).intValue());
+			rand = new Random(((Number)params.get(3)).intValue());
 		} else if( params.size() < 4 ) {
 			rand = new Random(System.currentTimeMillis());
 		} else throw new EvaluationException("You can pass N[, V[, F[, seed]]] as parameters");
 		
-		return PlanarGraph.newRandFromWheel(N, V, F).psi();
+		return PlanarGraph.newRandFromWheel(N, V, F, rand).psi();
 	}
 }

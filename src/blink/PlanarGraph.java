@@ -114,9 +114,12 @@ public class PlanarGraph {
     }
     
     public static PlanarGraph newRandFromWheel(int N, int vD, int fD) {
+        return newRandFromWheel(N, vD, fD, new Random());
+    }
+    
+    public static PlanarGraph newRandFromWheel(int N, int vD, int fD, Random rand) {
         PlanarGraph g = newWheel(N);
         boolean expanded = true;
-        Random rand = new Random();
         while (expanded) {
             expanded = false;
             for (PlanarVertex v : g.vertexes) {
