@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.lang.Integer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -286,13 +288,22 @@ public class PanelGemViewer extends JPanel {
             GemVertex[][][] bigons = gem.getBigons(colors[0], colors[1], colors[2]);
             for (int i = 0; i < 3; ++i) {
             	sb.append("Bigons " + colors[i].getNumber() + " - " + colors[(i+1)%3].getNumber() + ":\n");
+		HashMap<Integer, Integer> amount = new HashMap<Integer, Integer>();
+		
             	for (int j = 0; j < bigons[i].length; ++j) {
+			Integer lastInteger = amount.get(new Integer(bigons[i][j].length));
+			int last = 0;
+			if (lastInteger != null) last = lastInteger.intValue();
+			amount.put(new Integer(bigons[i][j].length), new Integer(last+1));
             		sb.append(colorPairs[colors[i].getNumber()][colors[(i+1)%3].getNumber()] + "" + j + ": ");
             		for (int k = 0; k < bigons[i][j].length; ++k) {
             			sb.append(bigons[i][j][k].getLabel() + ", ");
             		}
             		sb.append("size: " + bigons[i][j].length + "\n");
     	            maxSize = Math.max(maxSize, bigons[i][j].length);
+            	}
+            	for(Entry<Integer, Integer> entry: amount.entrySet()) {
+            		sb.append(entry.getValue() + " bigon(s) of size " + entry.getKey() + "\n");
             	}
             }
             
