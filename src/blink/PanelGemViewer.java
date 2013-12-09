@@ -27,6 +27,7 @@ import java.lang.Integer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -201,6 +202,7 @@ public class PanelGemViewer extends JPanel {
    	     tp.add(this.getInfoPanel2(),"Diff To S3");
    	  }
    	  tp.add(this.getInfoBigons(), "Bigons");
+   	  tp.add(this.getInfoBainhas(), "Bainhas");
         /*if (showStrings) {
             PanelString ps = new PanelString(_gem); // this won't update
             tp.add(ps, "Strings " + ps.getNumberOfStrings());
@@ -245,35 +247,111 @@ public class PanelGemViewer extends JPanel {
         */
     }
     
+    private JPanel getInfoBainhas() {
+        final StringBuffer sb = new StringBuffer();
+        Gem gem = _gem.copy();
+        
+        int[][] colorsPermNumber = {
+            {2,1,3,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
+        };
+            
+        GemColor[][] colorsPerm = new GemColor[4][4];
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                colorsPerm[i][j] = GemColor.getByNumber(
+                    colorsPermNumber[i][j]
+                );
+            }
+        }
+        
+        for (GemColor[] colors : colorsPerm) {
+            String permutacao = "(" +
+                colors[0].getNumber() + "," + colors[1].getNumber() + "," +
+                colors[2].getNumber() + "," + colors[3].getNumber() + ")";
+            sb.append("Bainhas usando permutacao "+permutacao+":\n");
+            
+            
+            GemVertex[] vertexes = gem.getVertices().toArray(new GemVertex[0]);
+            Arrays.sort(vertexes);
+            for (GemVertex v: vertexes) {
+                if (v.getLabel()%2 == 0) {
+                    continue;
+                }
+                sb.append(
+                    v.getLabel() + " - " +
+                    v.getNeighbour(colors[3]).getLabel() + ": " +
+                    "caminho\n"
+                );
+            }
+            
+            GemVertex[][][] bigons = gem.getBigons(colors[0], colors[1], colors[2]);
+            
+            GemVertex[][] bigons23 = bigons[1];
+            for (GemVertex[] bigon: bigons23) {
+                for (int i = 0; i < bigon.length; i += 2) {
+                    sb.append(
+                        bigon[i].getLabel() +
+                        " (" + bigon[i].getNeighbour(colors[3]).getLabel() +
+                        " - 2 - " + bigon[i+1].getLabel() + ") "
+                    );
+                    sb.append(
+                        bigon[i+1].getLabel() +
+                        " (" + bigon[i+1].getNeighbour(colors[3]).getLabel() +
+                        " - 3 - " + bigon[(i+2)%bigon.length].getLabel() + ") "
+                    );
+                }
+                sb.append(bigon[0].getLabel() + "\n");
+            }
+        }
+        JTextArea ta = new JTextArea();
+        ta.setFont(new Font("Courier New",Font.PLAIN,14));
+        ta.setText(sb.toString());
+        JPanel bottomPanel = new JPanel();
+		JButton saveButton = new JButton(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser=new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				chooser.setFileFilter(new FileNameExtensionFilter("Text File", "txt"));
+				chooser.showSaveDialog(null);
+				String path=chooser.getSelectedFile().getAbsolutePath();
+				if (path == null) {
+					return;
+				}
+				PrintWriter out;
+				try {
+					out = new PrintWriter(path);
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+					return;
+				}
+				out.println(sb.toString());
+				out.close();
+			}
+		});
+		saveButton.setLabel("Save");
+        bottomPanel.add(saveButton);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(new JScrollPane(ta),BorderLayout.CENTER);
+        panel.add(bottomPanel,BorderLayout.SOUTH);
+        return panel;
+    }
+    
     private JPanel getInfoBigons() {
         final StringBuffer sb = new StringBuffer();
         Gem gem = _gem.copy();
-        GemColor[][] colorsPerm = {
-        		{
-        		GemColor.getByNumber(2),
-        		GemColor.getByNumber(1),
-        		GemColor.getByNumber(3),
-        		GemColor.getByNumber(0)
-        		},
-        		{
-        		GemColor.getByNumber(2),
-        		GemColor.getByNumber(3),
-        		GemColor.getByNumber(0),
-        		GemColor.getByNumber(1)
-        		},
-        		{
-        		GemColor.getByNumber(1),
-        		GemColor.getByNumber(0),
-        		GemColor.getByNumber(3),
-        		GemColor.getByNumber(2)
-        		},
-        		{
-        		GemColor.getByNumber(0),
-        		GemColor.getByNumber(1),
-        		GemColor.getByNumber(2),
-        		GemColor.getByNumber(3)
-        		}
+        int[][] colorsPermNumbers = {
+            {2,1,3,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
         };
+            
+        GemColor[][] colorsPerm = new GemColor[4][4];
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                colorsPerm[i][j] = GemColor.getByNumber(
+                    colorsPermNumbers[i][j]
+                );
+            }
+        }
 
         char[][] colorPairs = {
         		{'-','a','b','c'},

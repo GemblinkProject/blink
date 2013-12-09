@@ -5387,7 +5387,7 @@ class Component {
     }
     public void findPossibleRoots() {
     }
-    public ArrayList<GemVertex>  getVertices() {
+    public ArrayList<GemVertex> getVertices() {
         int cs = this.getColorSet();
         Component component = _v.getComponent(cs);
         ArrayList<GemVertex> result = new ArrayList<GemVertex>();
