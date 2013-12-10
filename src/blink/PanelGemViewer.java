@@ -372,7 +372,7 @@ public class PanelGemViewer extends JPanel {
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < bigons[i].length; ++j) {
                     for (int k = 0; k < bigons[i][j].length; ++k) {
-                        faces.get(bigons[i][j][k]).put(colors[i], new Integer(j));
+                        faces.get(bigons[i][j][k]).put(colors[(i+(k%2))%3], new Integer(j));
                     }
                 }
             }
