@@ -292,16 +292,19 @@ public class PanelGemViewer extends JPanel {
                     sb.append(
                         bigon[i].getLabel() +
                         " (" + bigon[i].getNeighbour(colors[3]).getLabel() +
-                        " - 2 - " + bigon[i+1].getLabel() + ") "
+                        " - "+ colors[1].getNumber() +" - " + 
+                        bigon[i+1].getLabel() + ") "
                     );
                     sb.append(
                         bigon[i+1].getLabel() +
                         " (" + bigon[i+1].getNeighbour(colors[3]).getLabel() +
-                        " - 3 - " + bigon[(i+2)%bigon.length].getLabel() + ") "
+                        " - "+ colors[2].getNumber() +" - " + 
+                        bigon[(i+2)%bigon.length].getLabel() + ") "
                     );
                 }
                 sb.append(bigon[0].getLabel() + "\n");
             }
+            sb.append("\n");
         }
         JTextArea ta = new JTextArea();
         ta.setFont(new Font("Courier New",Font.PLAIN,14));
@@ -392,7 +395,7 @@ public class PanelGemViewer extends JPanel {
             		bigonPair[1] = colorPairs[colors[(i+1)%3].getNumber()][colors[(i+2)%3].getNumber()];
             		for (int k = 0; k < bigons[i][j].length; ++k) {
             			sb.append(bigons[i][j][k].getLabel() + " ");
-            			int counterFace = faces.get(bigons[i][j][(k+1)%bigons[i][j].length]).get(colors[(i+(k%2))%3]).intValue();
+            			int counterFace = faces.get(bigons[i][j][(k+1)%bigons[i][j].length]).get(colors[(i+(k%2))%3]).intValue() + 1;
             			sb.append("[" + bigonPair[k%2] + counterFace + "] ");
             		}
             		sb.append("size: " + bigons[i][j].length + "\n");
