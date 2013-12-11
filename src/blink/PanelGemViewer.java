@@ -269,7 +269,7 @@ public class PanelGemViewer extends JPanel {
                 colors[0].getNumber() + "," + colors[1].getNumber() + "," +
                 colors[2].getNumber() + "," + colors[3].getNumber() + ")";
             sb.append("Bainhas usando permutacao "+permutacao+":\n");
-            
+            GemColor trigonColors[] = {colors[0], colors[1], colors[2]};
             
             GemVertex[] vertexes = gem.getVertices().toArray(new GemVertex[0]);
             Arrays.sort(vertexes);
@@ -277,10 +277,28 @@ public class PanelGemViewer extends JPanel {
                 if (v.getLabel()%2 == 0) {
                     continue;
                 }
+                GemColor[] path = v.bfsPathFromC1(v.getNeighbour(colors[3]), trigonColors);
+                char[][] directions = new char[4][4];
+                for (int i = 0; i < 3; ++i) {
+                    directions[colors[i].getNumber()][colors[(i+1)%3].getNumber()] = '\\';
+                    directions[colors[(i+1)%3].getNumber()][colors[i].getNumber()] = '/';
+                }
+                StringBuffer upDownPath = new StringBuffer();
+                for (int i = 1; i < path.length; ++i) {
+                    if (i % 2 == 0) {
+                        upDownPath.append(
+                            directions[path[i-1].getNumber()][path[i].getNumber()]
+                        );
+                    } else {
+                        upDownPath.append(
+                            directions[path[i].getNumber()][path[i-1].getNumber()]
+                        );
+                    }
+                }
                 sb.append(
                     v.getLabel() + " - " +
                     v.getNeighbour(colors[3]).getLabel() + ": " +
-                    "caminho\n"
+                    upDownPath + "\n"
                 );
             }
             

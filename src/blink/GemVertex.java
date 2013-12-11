@@ -1,4 +1,8 @@
 package blink;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.HashMap;
 
 public class GemVertex implements Comparable, Cloneable {
     private int _label = -1;
@@ -173,4 +177,40 @@ public class GemVertex implements Comparable, Cloneable {
         }
     }
 
+    public GemColor[] bfsPathFromC1(GemVertex dest, GemColor[] colors) {
+        Queue<GemVertex> queue = new LinkedList<GemVertex>();
+        HashMap<GemVertex, GemColor> mark = new HashMap<GemVertex, GemColor>();
+        
+        GemVertex initial = this.getNeighbour(colors[0]);
+        mark.put(this, null);
+        mark.put(initial, colors[0]);
+        queue.add(initial);
+        
+        while (!queue.isEmpty()) {
+            GemVertex v = queue.remove();
+            if (v == dest) {
+                Stack<GemColor> back = new Stack<GemColor>();
+                while (true) {
+                    GemColor c = mark.get(v);
+                    if (c == null) {
+                        GemColor[] ret = new GemColor[back.size()];
+                        for (int i = 0; i < ret.length; ++i) {
+                            ret[i] = back.pop();
+                        }
+                        return ret;
+                    }
+                    back.push(c);
+                    v = v.getNeighbour(c);
+                }
+            }
+            for (GemColor c: colors) {
+                GemVertex u = v.getNeighbour(c);
+                if (!mark.containsKey(u)) {
+                    mark.put(u, c);
+                    queue.add(u);
+                }
+            }
+        }
+        return null;
+    }
 }
