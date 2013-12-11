@@ -252,7 +252,7 @@ public class PanelGemViewer extends JPanel {
         Gem gem = _gem.copy();
         
         int[][] colorsPermNumber = {
-            {2,1,3,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
+            {2,1,3,0}, {0,2,3,1}, {0,3,1,2}, {1,2,0,3}
         };
             
         GemColor[][] colorsPerm = new GemColor[4][4];
@@ -362,7 +362,7 @@ public class PanelGemViewer extends JPanel {
         final StringBuffer sb = new StringBuffer();
         Gem gem = _gem.copy();
         int[][] colorsPermNumbers = {
-            {2,1,3,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
+            {2,1,3,0}, {0,2,3,1}, {0,3,1,2}, {1,2,0,3}
         };
             
         GemColor[][] colorsPerm = new GemColor[4][4];
@@ -407,7 +407,7 @@ public class PanelGemViewer extends JPanel {
 			int last = 0;
 			if (lastInteger != null) last = lastInteger.intValue();
 			amount.put(new Integer(bigons[i][j].length), new Integer(last+1));
-            		sb.append(colorPairs[colors[i].getNumber()][colors[(i+1)%3].getNumber()] + "" + j + ": ");
+            		sb.append(colorPairs[colors[i].getNumber()][colors[(i+1)%3].getNumber()] + "" + (j+1) + ": ");
             		char[] bigonPair = new char[2];
             		bigonPair[0] = colorPairs[colors[(i+2)%3].getNumber()][colors[i].getNumber()];
             		bigonPair[1] = colorPairs[colors[(i+1)%3].getNumber()][colors[(i+2)%3].getNumber()];
