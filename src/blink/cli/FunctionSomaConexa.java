@@ -50,126 +50,61 @@ public class FunctionSomaConexa extends Function {
 
     public Object hardwork(ArrayList params, DataMap localMap) throws EvaluationException, Exception {
         if(params.get(0) instanceof Gem && params.get(1) instanceof Gem && params.get(2) instanceof Number && params.get(3) instanceof Number){
-        	
-        	Gem firstGemIn;
-        	Gem secondGemIn;
-        	
-        	Gem gemResult;
-        	Gem G2;
-        	
-        	
-        	int firstVertexIn;
-        	int secondVertexIn;
-        	
-        	
-
-        	
-        	if(((Gem) params.get(0)).getVertices().size() < ((Gem) params.get(1)).getVertices().size())
-        	{
-	        	firstGemIn = (Gem) params.get(0);
-	        	secondGemIn = (Gem) params.get(1);
-	        	firstVertexIn = (Integer) params.get(2);
-	        	secondVertexIn = (Integer) params.get(3);
-        	}else
-        	{
-        		firstGemIn = (Gem) params.get(1);
-	        	secondGemIn = (Gem) params.get(0);
-	        	firstVertexIn = (Integer) params.get(3);
-	        	secondVertexIn = (Integer) params.get(2);
-        		
+        	Gem G3 = (Gem) params.get(0);
+        	Gem G4 = (Gem) params.get(1);
+        	Gem G1 = G3.copy();
+        	Gem G2 = G4.copy();
+        	int novo = G1.getNumVertices()-1;
+        	int L1 = (Integer) params.get(2);
+        	int L2 = (Integer) params.get(3)+novo-1;
+        	int dif1 = G1.getNumVertices() - L1;
+        	int dif2 = (Integer) params.get(3)-1;
+        	for(int i = 1;i<=G1.getNumVertices();i++){
+        		int newlabel = G1.getVertex(i).getLabel();
+        		newlabel+=dif1;
+        		if(newlabel > G1.getNumVertices()) newlabel -= G1.getNumVertices();
+        		G1.getVertex(i).setLabel(newlabel);
         	}
-        	
-        	
-        	int FIRSTGEMLENGTH = firstGemIn.getNumVertices()-1;
-        	
-        	int L2 = (Integer) secondVertexIn+FIRSTGEMLENGTH-1;
-        	
-        	int dif1 = firstGemIn.getNumVertices() - firstVertexIn;
-        	int dif2 = secondVertexIn - 1;
-        	
-        	gemResult = firstGemIn.copy();
-        	G2 = secondGemIn.copy();
-        	
-        	
-        	for(int i = 1; i <= firstGemIn.getNumVertices(); i++)
-        	{
-        		int newlabel = firstGemIn.getVertex(i).getLabel();
-        		newlabel += dif1;
-        		
-        		if(newlabel > firstGemIn.getNumVertices()) 
-    			{
-        			newlabel -= firstGemIn.getNumVertices();
-    			}
-        		gemResult.getVertex(i).setLabel(newlabel);
+        	while(G1.getVertex(G1.getNumVertices()).getLabel() != G1.getNumVertices()){
+        		GemVertex vtemp = G1.removerVertice(1);
+        		G1.inserirVertice(vtemp);
         	}
-        	
-        	
-        	while(gemResult.getVertex(gemResult.getNumVertices()).getLabel() != gemResult.getNumVertices())
-        	{
-        		GemVertex vtemp = gemResult.removerVertice(1);
-        		gemResult.inserirVertice(vtemp);
-        	}
-        	
-        	for(int i = 1; i <= G2.getNumVertices(); i++)
-        	{
+        	for(int i = 1;i<=G2.getNumVertices();i++){
         		int newlabel = G2.getVertex(i).getLabel();
-        		newlabel -= dif2;
+        		newlabel-=dif2;
         		if(newlabel < 1 ) newlabel += G2.getNumVertices();
         		G2.getVertex(i).setLabel(newlabel);
         	}
-        	
-        	while(G2.getVertex(1).getLabel() != 1)
-        	{
+        	while(G2.getVertex(1).getLabel() != 1){
         		GemVertex vtemp = G2.removerVertice(1);
         		G2.inserirVertice(vtemp);
         	}
 
-        	for(int i = 1; i <= G2.getNumVertices(); i++)
-        	{        	
-        		G2.getVertex(i).setLabel(FIRSTGEMLENGTH++);
+        	for(int i = 1;i<=G2.getNumVertices();i++){        	
+        		G2.getVertex(i).setLabel(novo++);
         	}
         	
-        	GemVertex u = gemResult.getVertex(gemResult.getNumVertices());
-        	GemVertex v = G2.getVertex(1);
-        	
-        	GemVertex t1;
-        	GemVertex t2;
-        	
-        	
-        	t1 = u.getYellow(); 
-        	t2 = v.getYellow();
-        	
+        	GemVertex u = G1.getVertex(G1.getNumVertices()), v = G2.getVertex(1), t1, t2;
+        	t1 = u.getYellow(); t2 = v.getYellow();
         	t1.setYellow(t2);
         	t2.setYellow(t1);
-        	
-        	t1 = u.getBlue(); 
-        	t2 = v.getBlue();
-        	
+        	t1 = u.getBlue(); t2 = v.getBlue();
         	t1.setBlue(t2);
         	t2.setBlue(t1);
-        	
-        	t1 = u.getRed(); 
-        	t2 = v.getRed();
-        	
+        	t1 = u.getRed(); t2 = v.getRed();
         	t1.setRed(t2);
         	t2.setRed(t1);
-        	
-        	t1 = u.getGreen(); 
-        	t2 = v.getGreen();
-        	
+        	t1 = u.getGreen(); t2 = v.getGreen();
         	t1.setGreen(t2);
         	t2.setGreen(t1);
         	
-        	gemResult.removerVertice(gemResult.getNumVertices());
+        	G1.removerVertice(G1.getNumVertices());
         	
-        	for(int i = 2; i <= G2.getNumVertices(); i++)
-        	{
-        		gemResult.inserirVertice(G2.getVertex(i));
+        	for(int i = 2;i<=G2.getNumVertices();i++){
+        		G1.inserirVertice(G2.getVertex(i));
         	}
-        	
-        	gemResult.goToCodeLabel().getCode();
-        	return gemResult; 
-        	//return G3; //BUGBUG
+        	G1.goToCodeLabel().getCode();
+        	return G1;
         	
         }
         return null;
