@@ -252,7 +252,7 @@ public class PanelGemViewer extends JPanel {
         Gem gem = _gem.copy();
         
         int[][] colorsPermNumber = {
-            {2,1,3,0}, {0,2,3,1}, {0,3,1,2}, {1,2,0,3}
+            {3,2,1,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
         };
             
         GemColor[][] colorsPerm = new GemColor[4][4];
@@ -263,7 +263,6 @@ public class PanelGemViewer extends JPanel {
                 );
             }
         }
-        
         for (GemColor[] colors : colorsPerm) {
             String permutacao = "(" +
                 colors[0].getNumber() + "," + colors[1].getNumber() + "," +
@@ -277,31 +276,50 @@ public class PanelGemViewer extends JPanel {
                 if (v.getLabel()%2 == 0) {
                     continue;
                 }
-                GemColor[] path = v.bfsPathFromC1(v.getNeighbour(colors[3]), trigonColors);
+                GemColor[] path = v.bfsPathFromC1ByLeft(v.getNeighbour(colors[3]), trigonColors);
+                if (path.length > 63) {
+                    sb.append("Error: Path too large!!!!");
+                }
                 char[][] directions = new char[4][4];
                 for (int i = 0; i < 3; ++i) {
-                    directions[colors[i].getNumber()][colors[(i+1)%3].getNumber()] = '\\';
-                    directions[colors[(i+1)%3].getNumber()][colors[i].getNumber()] = '/';
+                    directions[colors[i].getNumber()][colors[(i+1)%3].getNumber()] = '\\'; // Left
+                    directions[colors[(i+1)%3].getNumber()][colors[i].getNumber()] = '/'; // Right
                 }
-                StringBuffer upDownPath = new StringBuffer();
+                long pathNumber = 0;
+                //StringBuffer upDownPath = new StringBuffer();
+                //GemVertex u = v.getNeighbour(path[0]);
+                //System.out.print("\n" + v.getLabel() + " " + u.getLabel());
                 for (int i = 1; i < path.length; ++i) {
+                    //u = u.getNeighbour(path[i]);
+                    //System.out.print(" " + u.getLabel());
                     if (i % 2 == 0) {
-                        upDownPath.append(
-                            directions[path[i-1].getNumber()][path[i].getNumber()]
-                        );
+                        if (directions[path[i-1].getNumber()][path[i].getNumber()] == '\\') {
+                            pathNumber = (pathNumber << 1) | 1;
+                        } else {
+                            pathNumber = (pathNumber << 1);
+                        }
+                        //upDownPath.append(
+                        //    directions[path[i-1].getNumber()][path[i].getNumber()]
+                        //);
                     } else {
-                        upDownPath.append(
-                            directions[path[i].getNumber()][path[i-1].getNumber()]
-                        );
+                        if (directions[path[i].getNumber()][path[i-1].getNumber()] == '\\') {
+                            pathNumber = (pathNumber << 1) | 1;
+                        } else {
+                            pathNumber = (pathNumber << 1);
+                        }
+                        //upDownPath.append(
+                        //    directions[path[i].getNumber()][path[i-1].getNumber()]
+                        //);
                     }
                 }
                 sb.append(
                     v.getLabel() + " - " +
                     v.getNeighbour(colors[3]).getLabel() + ": " +
-                    upDownPath + "\n"
+                    pathNumber + "\n"
                 );
             }
             
+            /*
             GemVertex[][][] bigons = gem.getBigons(colors[0], colors[1], colors[2]);
             
             GemVertex[][] bigons23 = bigons[1];
@@ -323,7 +341,9 @@ public class PanelGemViewer extends JPanel {
                 sb.append(bigon[0].getLabel() + "\n");
             }
             sb.append("\n");
+            */
         }
+        
         JTextArea ta = new JTextArea();
         ta.setFont(new Font("Courier New",Font.PLAIN,14));
         ta.setText(sb.toString());
@@ -362,7 +382,7 @@ public class PanelGemViewer extends JPanel {
         final StringBuffer sb = new StringBuffer();
         Gem gem = _gem.copy();
         int[][] colorsPermNumbers = {
-            {2,1,3,0}, {0,2,3,1}, {0,3,1,2}, {1,2,0,3}
+            {3,2,1,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
         };
             
         GemColor[][] colorsPerm = new GemColor[4][4];
@@ -399,7 +419,7 @@ public class PanelGemViewer extends JPanel {
             }
             
             for (int i = 0; i < 3; ++i) {
-            	sb.append("Bigons " + colors[i].getNumber() + " - " + colors[(i+1)%3].getNumber() + ":\n");
+            	sb.append("Bigons " + colors[i].getNumber() + " - " + colors[(i+1)%3].getNumber() + " in anticlockwise order:\n");
 		HashMap<Integer, Integer> amount = new HashMap<Integer, Integer>();
 		
             	for (int j = 0; j < bigons[i].length; ++j) {

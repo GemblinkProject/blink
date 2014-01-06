@@ -177,13 +177,20 @@ public class GemVertex implements Comparable, Cloneable {
         }
     }
 
-    public GemColor[] bfsPathFromC1(GemVertex dest, GemColor[] colors) {
+    public GemColor[] bfsPathFromC1ByLeft(GemVertex dest, GemColor[] colors) {
         Queue<GemVertex> queue = new LinkedList<GemVertex>();
         HashMap<GemVertex, GemColor> mark = new HashMap<GemVertex, GemColor>();
         
         GemVertex initial = this.getNeighbour(colors[0]);
         mark.put(this, null);
         mark.put(initial, colors[0]);
+        if (initial == dest) {
+            GemColor[] ret = {colors[0]};
+            return ret;
+        }
+        // Go to the left
+        initial = initial.getNeighbour(colors[2]);
+        mark.put(initial, colors[2]);
         queue.add(initial);
         
         while (!queue.isEmpty()) {
