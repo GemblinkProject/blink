@@ -252,7 +252,7 @@ public class PanelGemViewer extends JPanel {
         Gem gem = _gem.copy();
         
         int[][] colorsPermNumber = {
-            {3,2,1,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
+            {0,1,2,3}, {1,0,3,2}, {2,3,0,1}, {3,2,1,0}
         };
             
         GemColor[][] colorsPerm = new GemColor[4][4];
@@ -268,7 +268,7 @@ public class PanelGemViewer extends JPanel {
                 colors[0].getNumber() + "," + colors[1].getNumber() + "," +
                 colors[2].getNumber() + "," + colors[3].getNumber() + ")";
             sb.append("Bainhas usando permutacao "+permutacao+":\n");
-            GemColor trigonColors[] = {colors[0], colors[1], colors[2]};
+            GemColor trigonColors[] = {colors[1], colors[2], colors[3]};
             
             GemVertex[] vertexes = gem.getVertices().toArray(new GemVertex[0]);
             Arrays.sort(vertexes);
@@ -276,14 +276,14 @@ public class PanelGemViewer extends JPanel {
                 if (v.getLabel()%2 == 0) {
                     continue;
                 }
-                GemColor[] path = v.bfsPathFromC1ByLeft(v.getNeighbour(colors[3]), trigonColors);
+                GemColor[] path = v.bfsPathFromC1ByLeft(v.getNeighbour(colors[0]), trigonColors);
                 if (path.length > 63) {
                     sb.append("Error: Path too large!!!!");
                 }
                 char[][] directions = new char[4][4];
                 for (int i = 0; i < 3; ++i) {
-                    directions[colors[i].getNumber()][colors[(i+1)%3].getNumber()] = '\\'; // Left
-                    directions[colors[(i+1)%3].getNumber()][colors[i].getNumber()] = '/'; // Right
+                    directions[trigonColors[i].getNumber()][trigonColors[(i+1)%3].getNumber()] = '\\'; // Left
+                    directions[trigonColors[(i+1)%3].getNumber()][trigonColors[i].getNumber()] = '/'; // Right
                 }
                 long pathNumber = 0;
                 //StringBuffer upDownPath = new StringBuffer();
@@ -314,34 +314,11 @@ public class PanelGemViewer extends JPanel {
                 }
                 sb.append(
                     v.getLabel() + " - " +
-                    v.getNeighbour(colors[3]).getLabel() + ": " +
+                    v.getNeighbour(colors[0]).getLabel() + 
+                    "(bainha " + v.getLabel() + "-" + v.getNeighbour(colors[1]) + "): " +
                     pathNumber + "\n"
                 );
             }
-            
-            /*
-            GemVertex[][][] bigons = gem.getBigons(colors[0], colors[1], colors[2]);
-            
-            GemVertex[][] bigons23 = bigons[1];
-            for (GemVertex[] bigon: bigons23) {
-                for (int i = 0; i < bigon.length; i += 2) {
-                    sb.append(
-                        bigon[i].getLabel() +
-                        " (" + bigon[i].getNeighbour(colors[3]).getLabel() +
-                        " - "+ colors[1].getNumber() +" - " + 
-                        bigon[i+1].getLabel() + ") "
-                    );
-                    sb.append(
-                        bigon[i+1].getLabel() +
-                        " (" + bigon[i+1].getNeighbour(colors[3]).getLabel() +
-                        " - "+ colors[2].getNumber() +" - " + 
-                        bigon[(i+2)%bigon.length].getLabel() + ") "
-                    );
-                }
-                sb.append(bigon[0].getLabel() + "\n");
-            }
-            sb.append("\n");
-            */
         }
         
         JTextArea ta = new JTextArea();
@@ -382,7 +359,7 @@ public class PanelGemViewer extends JPanel {
         final StringBuffer sb = new StringBuffer();
         Gem gem = _gem.copy();
         int[][] colorsPermNumbers = {
-            {3,2,1,0}, {2,3,0,1}, {1,0,3,2}, {0,1,2,3}
+            {0,1,2,3}, {1,0,3,2}, {2,3,0,1}, {3,2,1,0}
         };
             
         GemColor[][] colorsPerm = new GemColor[4][4];
@@ -401,10 +378,10 @@ public class PanelGemViewer extends JPanel {
         		{'C','E','F','-'}
         };
         for (GemColor[] colors : colorsPerm) {
-            sb.append("Bigons using fourth color as " + colors[3] + " ("+ colors[3].getNumber() +"):\n");
+            sb.append("Bigons using fourth color (0) as " + colors[0] + " ("+ colors[0].getNumber() +"):\n");
             
             int maxSize = 0;
-            GemVertex[][][] bigons = gem.getBigons(colors[0], colors[1], colors[2]);
+            GemVertex[][][] bigons = gem.getBigons(colors[1], colors[2], colors[3]);
             
             HashMap<GemVertex, HashMap<GemColor, Integer>> faces = new HashMap<GemVertex, HashMap<GemColor, Integer>>();
             for (GemVertex v: gem.getVertices()) {
@@ -413,13 +390,13 @@ public class PanelGemViewer extends JPanel {
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < bigons[i].length; ++j) {
                     for (int k = 0; k < bigons[i][j].length; ++k) {
-                        faces.get(bigons[i][j][k]).put(colors[(i+(k%2))%3], new Integer(j));
+                        faces.get(bigons[i][j][k]).put(colors[(i+(k%2))%3+1], new Integer(j));
                     }
                 }
             }
             
             for (int i = 0; i < 3; ++i) {
-            	sb.append("Bigons " + colors[i].getNumber() + " - " + colors[(i+1)%3].getNumber() + " in anticlockwise order:\n");
+            	sb.append("Bigons " + colors[i+1].getNumber() + " - " + colors[(i+1)%3+1].getNumber() + " in anticlockwise order:\n");
 		HashMap<Integer, Integer> amount = new HashMap<Integer, Integer>();
 		
             	for (int j = 0; j < bigons[i].length; ++j) {
@@ -427,13 +404,13 @@ public class PanelGemViewer extends JPanel {
 			int last = 0;
 			if (lastInteger != null) last = lastInteger.intValue();
 			amount.put(new Integer(bigons[i][j].length), new Integer(last+1));
-            		sb.append(colorPairs[colors[i].getNumber()][colors[(i+1)%3].getNumber()] + "" + (j+1) + ": ");
+            		sb.append(colorPairs[colors[i+1].getNumber()][colors[(i+1)%3+1].getNumber()] + "" + (j+1) + ": ");
             		char[] bigonPair = new char[2];
-            		bigonPair[0] = colorPairs[colors[(i+2)%3].getNumber()][colors[i].getNumber()];
-            		bigonPair[1] = colorPairs[colors[(i+1)%3].getNumber()][colors[(i+2)%3].getNumber()];
+            		bigonPair[0] = colorPairs[colors[(i+2)%3+1].getNumber()][colors[i+1].getNumber()];
+            		bigonPair[1] = colorPairs[colors[(i+1)%3+1].getNumber()][colors[(i+2)%3+1].getNumber()];
             		for (int k = 0; k < bigons[i][j].length; ++k) {
             			sb.append(bigons[i][j][k].getLabel() + " ");
-            			int counterFace = faces.get(bigons[i][j][(k+1)%bigons[i][j].length]).get(colors[(i+(k%2))%3]).intValue() + 1;
+            			int counterFace = faces.get(bigons[i][j][(k+1)%bigons[i][j].length]).get(colors[(i+(k%2))%3+1]).intValue() + 1;
             			sb.append("[" + bigonPair[k%2] + counterFace + "] ");
             		}
             		sb.append("size: " + bigons[i][j].length + "\n");

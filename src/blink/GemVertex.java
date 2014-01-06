@@ -125,6 +125,11 @@ public class GemVertex implements Comparable, Cloneable {
     public GemVertex getNeighbour(int colorIndex) {
         return getNeighbour(GemColor.getByNumber(colorIndex));
     }
+    
+    public GemVertex[] getNeighbours() {
+        GemVertex[] ret = {_yellow, _blue, _red, _green};
+        return ret;
+    }
 
     public int getLabel() {
         return _label;
