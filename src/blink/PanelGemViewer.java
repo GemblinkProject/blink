@@ -315,7 +315,8 @@ public class PanelGemViewer extends JPanel {
                 sb.append(
                     v.getLabel() + " - " +
                     v.getNeighbour(colors[0]).getLabel() + 
-                    "(bainha " + v.getLabel() + "-" + v.getNeighbour(colors[1]) + "): " +
+                    "(bainha " + v.getLabel() + "-" +
+                    v.getNeighbour(colors[1]).getLabel() + "): " +
                     pathNumber + "\n"
                 );
             }

@@ -341,7 +341,7 @@ public class Gem implements Cloneable, Comparable {
 	    bigons.add(new ArrayList<ArrayList<GemVertex>>());
 	    for (int i = 0 ; i < 3; ++i) {
 	    	bigons.add(new ArrayList<ArrayList<GemVertex>>());
-    	}
+    	}   
 	    
 	    HashMap<GemColor, Integer> colorIdx = new HashMap<GemColor, Integer>();
 	    colorIdx.put(cA, new Integer(0));
@@ -398,8 +398,9 @@ public class Gem implements Cloneable, Comparable {
 	            // Rotate
 	            int iMin = 0;
 	            for (int i = 1; i < bigon.size(); ++i) {
-	            	if(bigon.get(i).getLabel() % 2 == 1 &&
-	            			bigon.get(i).getLabel() < bigon.get(iMin).getLabel()) {
+	            	if(bigon.get(iMin).getLabel() % 2 == 0 ||
+	            	    bigon.get(i).getLabel() % 2 == 1 &&
+	            		bigon.get(i).getLabel() < bigon.get(iMin).getLabel()) {
 	            		iMin = i;
 	            	}
 	            }

@@ -119,6 +119,8 @@ public class FunctionSomaConexa extends Function {
             n1.setNeighbour(n2, c);
             n2.setNeighbour(n1, c);
         }
+        
+        G.goToCodeLabel();
         return G;
     }
 }
