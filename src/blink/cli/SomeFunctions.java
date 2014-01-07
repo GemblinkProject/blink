@@ -5087,3 +5087,37 @@ class FunctionMatveevReport extends Function {
         pw.close();
     }
 }
+
+class FunctionSwapColors extends Function {
+
+    public FunctionSwapColors() {
+        super("swapcolors", "Create a new gem with swapped colors, usage: swapcolors(gem, c1, c2), where 0 <= c1 < 4");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if(params.get(0) instanceof Gem && params.get(1) instanceof Number && params.get(2) instanceof Number) {
+        	GemColor c1 = GemColor.getByNumber((Integer) params.get(1));
+        	GemColor c2 = GemColor.getByNumber((Integer) params.get(2));
+        	Gem G2 = (Gem) params.get(0);
+        	Gem G1 = G2.copy();
+        	G1.swapColors(c1,c2);
+        	return G1;
+        } else {
+            throw new EvaluationException("Wrong parameters");
+        }
+    }
+}

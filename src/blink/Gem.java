@@ -4228,7 +4228,17 @@ public class Gem implements Cloneable, Comparable {
         return g;
 
     }
+    
+    
+    public void swapColors(GemColor c1, GemColor c2) {
+        for (GemVertex v: _vertices) {
+            GemVertex tmp = v.getNeighbour(c1);
+            v.setNeighbour(v.getNeighbour(c2), c1);
+            v.setNeighbour(tmp, c2);
+        }
+    }
 }
+// end class gem
 
 // ----------------------------------------------------------------------------
 // Graph with Contracted Bigons and
@@ -4473,6 +4483,7 @@ class BGraph {
         return bestList;
 
     }
+    
 }
 
 class BGraphEdgeIterator {
@@ -5555,6 +5566,7 @@ class InverseDipole {
 
     public String toString() {
         return String.format("Inverse Dipole edges %d %s and %d %s new vertices %d %d",
+
                              _edgeVertex1,_edgeColor1,
                              _edgeVertex2,_edgeColor2,
                              _newLabel1, _newLabel2);
