@@ -4253,11 +4253,17 @@ public class Gem implements Cloneable, Comparable {
                 return v1.getLabel() - v2.getLabel();
             }
         });
+        int lastLineBreak = 0;
         for (GemVertex v: vertexes) {
-            System.out.println(v.getLabel());
             for (GemColor c: GemColor.values()) {
                 if (k++ != 0) s.append(sep);
                 s.append(v.getNeighbour(c).getLabel());
+                
+                if (s.length() - lastLineBreak >= 80) {
+                    s.append("\n");
+                    lastLineBreak = s.length();
+                    k = 0;
+                }
             }
         }
         return s.toString();
@@ -4284,7 +4290,10 @@ public class Gem implements Cloneable, Comparable {
     }
     static public Gem fromNumCode(String code) {
         int[] mat = getNumsFromCode(code);
-        int n = mat.length/4;
+        return fromNumCode(mat);
+    }
+    static public Gem fromNumCode(int[] code) {
+        int n = code.length/4;
         GemVertex[] vertexes = new GemVertex[n];
         Gem g = new Gem();
         for (int i = 0; i < n; ++i) {
@@ -4294,7 +4303,7 @@ public class Gem implements Cloneable, Comparable {
         for (int i = 0; i < n; ++i) {
             int j = 0;
             for (GemColor c: GemColor.values()) {
-                vertexes[i].setNeighbour(vertexes[mat[i*4+j]-1], c);
+                vertexes[i].setNeighbour(vertexes[code[i*4+j]-1], c);
                 ++j;
             }
         }

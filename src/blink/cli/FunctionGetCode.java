@@ -112,7 +112,20 @@ class FunctionGemFromNumCode extends Function {
     public Object hardwork(ArrayList params, DataMap localMap) throws EvaluationException, Exception {
         if(params.get(0) instanceof String ){
         	return Gem.fromNumCode((String)params.get(0));
+        } else {
+            ArrayList<Integer> nums = new ArrayList<Integer>();
+            for (Object param: params) {
+                if (param instanceof Integer) {
+                    nums.add((Integer)param);
+                } else {
+                    return null;
+                }
+            }
+            int[] code = new int[nums.size()];
+            for (int i = 0; i < code.length; ++i) {
+                code[i] = nums.get(i).intValue();
+            }
+            return Gem.fromNumCode(code);
         }
-        return null;
     }
 }

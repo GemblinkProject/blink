@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.io.FileInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
+
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -5116,6 +5119,70 @@ class FunctionSwapColors extends Function {
         	Gem G1 = G2.copy();
         	G1.swapColors(c1,c2);
         	return G1;
+        } else {
+            throw new EvaluationException("Wrong parameters");
+        }
+    }
+}
+
+class FunctionSaveTxt extends Function {
+    public FunctionSaveTxt() {
+        super("savetxt", "Save in a file, a string. E.g., savetxt(\"file.ext\", getnumcode(gem(1)))");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if(params.get(0) instanceof String && params.get(1) instanceof String) {
+        	PrintWriter out = new PrintWriter((String) params.get(0));
+        	out.println((String) params.get(1));
+        	out.close();
+        } else {
+            throw new EvaluationException("Wrong parameters");
+        }
+        return null;
+    }
+}
+
+class FunctionLoadTxt extends Function {
+    public FunctionLoadTxt() {
+        super("loadtxt", "Get the contetns of a file");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if(params.get(0) instanceof String) {
+            File file = new File((String)params.get(0));
+            FileInputStream fis = new FileInputStream(file);
+            byte[] data = new byte[(int)file.length()];
+            fis.read(data);
+            fis.close();
+            return new String(data);
         } else {
             throw new EvaluationException("Wrong parameters");
         }
