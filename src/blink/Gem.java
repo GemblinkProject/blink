@@ -17,6 +17,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -4237,6 +4239,67 @@ public class Gem implements Cloneable, Comparable {
             v.setNeighbour(tmp, c2);
         }
     }
+    
+    public String getNumCode() {
+        return getNumCode(",");
+    }
+    public String getNumCode(String sep) {
+        StringBuffer s = new StringBuffer();
+        int k = 0;
+        GemVertex[] vertexes = new GemVertex[_vertices.size()];
+        _vertices.toArray(vertexes);
+        Arrays.sort(vertexes, new Comparator<GemVertex>() {
+            public int compare(GemVertex v1, GemVertex v2) {
+                return v1.getLabel() - v2.getLabel();
+            }
+        });
+        for (GemVertex v: vertexes) {
+            System.out.println(v.getLabel());
+            for (GemColor c: GemColor.values()) {
+                if (k++ != 0) s.append(sep);
+                s.append(v.getNeighbour(c).getLabel());
+            }
+        }
+        return s.toString();
+    }
+    static public int[] getNumsFromCode(String code) {
+        ArrayList<Integer> nums = new ArrayList<Integer>();
+        int last = 0;
+        for (char c: code.toCharArray()) {
+            if ('0' <= c && c <= '9') {
+                last = last*10 + c - '0';
+            } else if (last != 0) {
+                nums.add(new Integer(last));
+                last = 0;
+            }
+        }
+        if (last != 0) {
+            nums.add(new Integer(last));
+        }
+        int[] ret = new int[nums.size()];
+        for (int i = 0; i < ret.length; ++i) {
+            ret[i] = nums.get(i).intValue();
+        }
+        return ret;
+    }
+    static public Gem fromNumCode(String code) {
+        int[] mat = getNumsFromCode(code);
+        int n = mat.length/4;
+        GemVertex[] vertexes = new GemVertex[n];
+        Gem g = new Gem();
+        for (int i = 0; i < n; ++i) {
+            vertexes[i] = new GemVertex(i+1);
+            g.addVertex(vertexes[i]);
+        }
+        for (int i = 0; i < n; ++i) {
+            int j = 0;
+            for (GemColor c: GemColor.values()) {
+                vertexes[i].setNeighbour(vertexes[mat[i*4+j]-1], c);
+                ++j;
+            }
+        }
+        return g;
+    }
 }
 // end class gem
 
@@ -4316,6 +4379,7 @@ class BGraph {
             _taggedEdges.remove(_taggedEdges.size()-1);
 
             // already a spanning tree?
+
             if (_maxTaggedEdges.size() == this.getNumVertices()-1)
                 break;
         }

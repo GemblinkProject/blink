@@ -59,3 +59,60 @@ public class FunctionGetCode extends Function {
         return null;
     }
 }
+
+class FunctionGetNumCode extends Function {
+    public FunctionGetNumCode() {
+        super("getnumcode", "get canonical numeric code");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    public Object hardwork(ArrayList params, DataMap localMap) throws EvaluationException, Exception {
+        if(params.get(0) instanceof Gem ){
+        	Gem G2 = (Gem) params.get(0);
+        	Gem G1 = G2.copy();
+        	G1.goToCodeLabel();
+        	return G1.getNumCode();
+        }
+        return null;
+    }
+}
+
+class FunctionGemFromNumCode extends Function {
+    public FunctionGemFromNumCode() {
+        super("gemfromnumcode", "create gem from canonical numeric code");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    public Object hardwork(ArrayList params, DataMap localMap) throws EvaluationException, Exception {
+        if(params.get(0) instanceof String ){
+        	return Gem.fromNumCode((String)params.get(0));
+        }
+        return null;
+    }
+}

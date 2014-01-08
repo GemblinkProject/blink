@@ -134,7 +134,9 @@ public class CommandLineInterface {
                              new FunctionGridSimplification(),
                              new FunctionDrawS(),
                              new FunctionRandomGemFromWheel(),
-                             new FunctionSwapColors()
+                             new FunctionSwapColors(),
+                             new FunctionGetNumCode(),
+                             new FunctionGemFromNumCode()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);
