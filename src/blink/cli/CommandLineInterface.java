@@ -138,7 +138,8 @@ public class CommandLineInterface {
                              new FunctionGetNumCode(),
                              new FunctionGemFromNumCode(),
                              new FunctionSaveTxt(),
-                             new FunctionLoadTxt()
+                             new FunctionLoadTxt(),
+                             new FunctionSimplify()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);

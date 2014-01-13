@@ -277,6 +277,10 @@ public class PanelGemViewer extends JPanel {
                     continue;
                 }
                 GemColor[] path = v.bfsPathFromC1ByLeft(v.getNeighbour(colors[0]), trigonColors);
+                if (path == null) {
+                    sb.append("Error: No path!");
+                    continue;
+                }
                 if (path.length > 63) {
                     sb.append("Error: Path too large!!!!");
                 }
