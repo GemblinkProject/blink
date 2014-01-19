@@ -50,74 +50,103 @@ public class FunctionSomaConexa extends Function {
 
     public Object hardwork(ArrayList params, DataMap localMap) throws EvaluationException, Exception {
         Gem G = new Gem();
-        GemVertex v1 = null, v2 = null;
-        if(params.get(0) instanceof Gem && params.get(1) instanceof Gem && params.get(2) instanceof Number && params.get(3) instanceof Number) {
-        	Gem G3 = (Gem) params.get(0);
-        	Gem G4 = (Gem) params.get(1);
-        	Gem G1 = G3.copy();
-        	Gem G2 = G4.copy();
-        	int novo = G1.getNumVertices()-1;
-        	int L1 = (Integer) params.get(2);
-        	int L2 = (Integer) params.get(3);
+        GemVertex[] V;
+        if(params.get(0) instanceof Gem && params.get(1) instanceof Gem) {
+            int[] L = new int[params.size()-2];
+            if (L.length % 2 != 0) {
+                throw new EvaluationException("You should pass a even number of labels");
+            }
+            V = new GemVertex[L.length];
+            for (int i = 2; i < params.size(); ++i) {
+                L[i-2] = (Integer) params.get(i);
+            }
+        	Gem G1 = ((Gem) params.get(0)).copy();
+        	Gem G2 = ((Gem) params.get(1)).copy();
+        	int novo = G1.getNumVertices()-L.length/2;
+        	
         	for (GemVertex v: G1.getVertices()) {
-        	    if (v.getLabel() != L1) {
-        	        if (v.getLabel() > L1) {
-        	            v.setLabel(v.getLabel()-1);
+        	    int labelDec = 0;
+        	    for (int i = 0; i < L.length; i+=2) {
+        	        if (v.getLabel() == L[i]) {
+        	            V[i] = v;
+        	            labelDec = -1;
+        	            break;
         	        }
+        	        if (v.getLabel() > L[i]) {
+        	            ++labelDec;
+        	        }
+        	    }
+        	    if (labelDec != -1) {
+        	        v.setLabel(v.getLabel()-labelDec);
         	        G.addVertex(v);
-        	    } else {
-        	        v1 = v;
         	    }
         	}
         	for (GemVertex v: G2.getVertices()) {
-        	    if (v.getLabel() != L2) {
-        	        if (v.getLabel() > L2) {
-        	            v.setLabel(v.getLabel()-1 + novo);
-        	        } else {
-        	            v.setLabel(v.getLabel() + novo);
+        	    int labelDec = 0;
+        	    for (int i = 1; i < L.length; i+=2) {
+        	        if (v.getLabel() == L[i]) {
+        	            V[i] = v;
+        	            labelDec = -1;
+        	            break;
         	        }
+        	        if (v.getLabel() > L[i]) {
+        	            ++labelDec;
+        	        }
+        	    }
+        	    if (labelDec != -1) {
+        	        v.setLabel(v.getLabel()-labelDec+novo);
         	        G.addVertex(v);
-        	    } else {
-        	        v2 = v;
         	    }
         	}
-        } else if(params.get(0) instanceof Gem && params.get(1) instanceof Number && params.get(2) instanceof Number) {
-        	Gem G2 = (Gem) params.get(0);
-        	Gem G1 = G2.copy();
-        	int L1 = (Integer) params.get(1);
-        	int L2 = (Integer) params.get(2);
-        	if (L1 > L2) {
-        	    int tmp = L1;
-        	    L1 = L2;
-        	    L2 = tmp;
-        	}
+        } else if(params.get(0) instanceof Gem) {
+            int[] L = new int[params.size()-1];
+            if (L.length % 2 != 0) {
+                throw new EvaluationException("You should pass a even number of labels");
+            }
+            for (int i = 1; i < params.size(); ++i) {
+                L[i-1] = (Integer) params.get(i);
+            }
+            V = new GemVertex[L.length];
+        	Gem G1 = ((Gem) params.get(0)).copy();
         	for (GemVertex v: G1.getVertices()) {
-        	    if (v.getLabel() < L1) {
-        	        G.addVertex(v);
-        	    } else if (v.getLabel() == L1) {
-        	        v1 = v;
-        	    } else if (v.getLabel() < L2) {
-        	        v.setLabel(v.getLabel()-1);
-        	        G.addVertex(v);
-        	    } else if (v.getLabel() == L2) {
-        	        v2 = v;
-        	    } else {
-        	        v.setLabel(v.getLabel()-2);
+        	    int labelDec = 0;
+        	    for (int i = 0; i < L.length; ++i) {
+        	        if (v.getLabel() == L[i]) {
+        	            V[i] = v;
+        	            labelDec = -1;
+        	            break;
+        	        }
+        	        if (v.getLabel() > L[i]) {
+        	            ++labelDec;
+        	        }
+        	    }
+        	    if (labelDec != -1) {
+        	        v.setLabel(v.getLabel()-labelDec);
         	        G.addVertex(v);
         	    }
         	}
         } else {
-            throw new EvaluationException("You should pass: gem G1[, gem G2], int L1, int L2");
-        }
-        if (v1 == null || v2 == null) {
-            throw new EvaluationException("Wrong labels");
+            throw new EvaluationException("You should pass: gem G1[, gem G2], int I1, int J1, ...");
         }
         
-        for (GemColor c: GemColor.values()) {
-            GemVertex n1 = v1.getNeighbour(c);
-            GemVertex n2 = v2.getNeighbour(c);
-            n1.setNeighbour(n2, c);
-            n2.setNeighbour(n1, c);
+        for (int i = 0; i < V.length; ++i) {
+            if (V[i] == null) {
+                throw new EvaluationException("Wrong labels");
+            }
+            for (int j = i+1; j < V.length; ++j) {
+                if (V[i] == V[j]) {
+                    throw new EvaluationException("All labels has to be different");
+                }
+            }
+        }
+        
+        for (int i = 0; i < V.length; i+=2) {
+            for (GemColor c: GemColor.values()) {
+                GemVertex n1 = V[i].getNeighbour(c);
+                GemVertex n2 = V[i+1].getNeighbour(c);
+                n1.setNeighbour(n2, c);
+                n2.setNeighbour(n1, c);
+            }
         }
         
         G.goToCodeLabel();

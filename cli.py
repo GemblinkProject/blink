@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 from py4j.java_gateway import (JavaGateway, GatewayClient, Py4JNetworkError)
 import random
@@ -9,6 +10,13 @@ import rlcompleter
 import os
 import code
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--out', help='open a terminal with the jvm stdout',
+                    const=1, default=0, dest='out', action='store_const')
+parser.add_argument('--err', help='open a terminal with the jvm stderr',
+                    const=1, default=0, dest='err', action='store_const')
+args = parser.parse_args()
+
 # Add path with python modules for blink
 path = os.path.join(os.environ['PWD'], 'pysrc/')
 if path not in sys.path:
@@ -19,15 +27,30 @@ java_cmd = open('run').readlines()[0].split(' ')
 java_cmd[-2] += ':lib/py4j0.8.jar' # add library py4j
 java_cmd[-1] = 'blink/cli/PythonBridge'
 
+outfilename = os.path.join(os.environ['HOME'], '.gemblinkout')
+errfilename = os.path.join(os.environ['HOME'], '.gemblinkerr')
+histfilename = os.path.join(os.environ['HOME'], '.gemblinkhistory')
+
+try:
+    outfile = open(outfilename, 'w')
+except:
+    outfile = subprocess.PIPE
+try:
+    errfile = open(errfilename, 'w')
+except:
+    errfile = subprocess.PIPE
+
 retries = 0
-rerun_java_after = 5
-while retries < 20:
+rerun_java_after = 15
+while retries < 45:
     if retries%rerun_java_after == 0:
         java_gateway_port = random.randint(16000, 32000)
         jvm = subprocess.Popen(java_cmd + [str(java_gateway_port)],
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
+                               stdout=outfile,
+                               stderr=errfile,
                                )
+        if args.err: subprocess.Popen(['x-terminal-emulator', '-e', 'tail -f --pid='+str(jvm.pid)+' '+outfilename]);
+        if args.out: subprocess.Popen(['x-terminal-emulator', '-e', 'tail -f --pid='+str(jvm.pid)+' '+errfilename]);
     try:
         java_gateway = JavaGateway(GatewayClient(port=java_gateway_port))
         java_name = java_gateway.jvm.System.getProperty("java.runtime.name")
@@ -92,12 +115,11 @@ except Exception as e:
 readline.set_completer(rlcompleter.Completer(functions).complete)
 readline.parse_and_bind("tab: complete")
 try:
-    histfile = os.path.join(os.environ['HOME'], '.gemblinkhistory')
-    readline.read_history_file(histfile)
+    readline.read_history_file(histfilename)
 except IOError:
     pass
 
 code.interact(banner="Python CLI for GemBlink", local=functions)
 
-readline.write_history_file(histfile)
+readline.write_history_file(histfilename)
 jvm.kill()

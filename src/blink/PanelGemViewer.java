@@ -217,11 +217,18 @@ public class PanelGemViewer extends JPanel {
         //}
 
         this.setLayout(new BorderLayout());
-        this.add(new JTextField(String.format("NVert: %d  HG: %s Handle: %d Code: %s",
-                                          _gem.getNumVertices(),
-                                          _gem.homologyGroup().toString(),
-                                          _gem.getHandleNumber(),code
-                            )),BorderLayout.NORTH);
+        if (showInfo) {
+            this.add(new JTextField(String.format("NVert: %d  HG: %s Handle: %d Code: %s",
+                                              _gem.getNumVertices(),
+                                              _gem.homologyGroup().toString(),
+                                              _gem.getHandleNumber(),code
+                                )),BorderLayout.NORTH);
+        } else {
+            this.add(new JTextField(String.format("NVert: %d Code: %s",
+                                              _gem.getNumVertices(),
+                                              code
+                                )),BorderLayout.NORTH);
+        }
         this.add(tp,BorderLayout.CENTER);
     }
 
@@ -278,11 +285,24 @@ public class PanelGemViewer extends JPanel {
                 }
                 GemColor[] path = v.bfsPathFromC1ByLeft(v.getNeighbour(colors[0]), trigonColors);
                 if (path == null) {
-                    sb.append("Error: No path!");
+                    sb.append(
+                        v.getLabel() + " - " +
+                        v.getNeighbour(colors[0]).getLabel() + 
+                        "(bainha " + v.getLabel() + "-" +
+                        v.getNeighbour(colors[1]).getLabel() + "): " +
+                        "No path!\n"
+                    );
                     continue;
                 }
                 if (path.length > 63) {
-                    sb.append("Error: Path too large!!!!");
+                    sb.append(
+                        v.getLabel() + " - " +
+                        v.getNeighbour(colors[0]).getLabel() + 
+                        "(bainha " + v.getLabel() + "-" +
+                        v.getNeighbour(colors[1]).getLabel() + "): " +
+                        "Path too large!\n"
+                    );
+                    continue;
                 }
                 char[][] directions = new char[4][4];
                 for (int i = 0; i < 3; ++i) {

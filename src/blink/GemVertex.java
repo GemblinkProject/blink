@@ -193,18 +193,21 @@ public class GemVertex implements Comparable, Cloneable {
             GemColor[] ret = {colors[0]};
             return ret;
         }
-        // Go to the left
+        // Go to the left (Warning: initial can be this)
         initial = initial.getNeighbour(colors[2]);
         mark.put(initial, colors[2]);
         queue.add(initial);
-        
         while (!queue.isEmpty()) {
             GemVertex v = queue.remove();
             if (v == dest) {
                 Stack<GemColor> back = new Stack<GemColor>();
                 while (true) {
                     GemColor c = mark.get(v);
-                    if (c == null) {
+                    if (v != this) {
+                        if (c != null) {
+                            back.push(c);
+                            back.push(colors[0]);
+                        }
                         GemColor[] ret = new GemColor[back.size()];
                         for (int i = 0; i < ret.length; ++i) {
                             ret[i] = back.pop();
