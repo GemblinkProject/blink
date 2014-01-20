@@ -444,6 +444,7 @@ public class Gem implements Cloneable, Comparable {
                                gist.newVertex()};
             if (v.getLabel() == 1) {
                 for (int i=0;i<4;i++) {
+
                     gist.setNeighbours(vvs[i], vvs[i], GistEdgeType.plus);
                     gist.setNeighbours(vvs[i], vvs[i], GistEdgeType.minus);
                     gist.setNeighbours(vvs[i], vvs[i], GistEdgeType.times);
@@ -901,6 +902,7 @@ public class Gem implements Cloneable, Comparable {
         GemVertex v = p.getV();
         GemVertex uu = u.getNeighbour(p.getColor());
         GemVertex vv = v.getNeighbour(p.getColor());
+
 
         // descobrir um bigon comum às duas arestas
         GemColor c = p.getColor();
@@ -4259,7 +4261,7 @@ public class Gem implements Cloneable, Comparable {
                 if (k++ != 0) s.append(sep);
                 s.append(v.getNeighbour(c).getLabel());
                 
-                if (s.length() - lastLineBreak >= 80) {
+                if (s.length() - lastLineBreak >= 70) {
                     s.append("\n");
                     lastLineBreak = s.length();
                     k = 0;
