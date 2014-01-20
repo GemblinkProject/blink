@@ -5188,3 +5188,32 @@ class FunctionLoadTxt extends Function {
         }
     }
 }
+
+class FunctionClone extends Function {
+    public FunctionClone() {
+        super("clone", "Clone a gem");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if(params.get(0) instanceof Gem) {
+            Gem g = (Gem) params.get(0);
+            return g.copy();
+        } else {
+            throw new EvaluationException("Must receive a gem");
+        }
+    }
+}

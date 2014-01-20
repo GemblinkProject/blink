@@ -143,6 +143,8 @@ public class FunctionSomaConexa extends Function {
         V = new GemVertex[L.length/2];
         for (int i = ngems*2; i < nparams; ++i) {
             L[i-ngems*2] = (Integer) params.get(i);
+            // Gem labels from 1-based to 0-based
+            if (i % 2 == 1) L[i-ngems*2]--;
         }
         
         // Graph
