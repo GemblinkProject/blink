@@ -203,7 +203,7 @@ public class GemVertex implements Comparable, Cloneable {
                 Stack<GemColor> back = new Stack<GemColor>();
                 while (true) {
                     GemColor c = mark.get(v);
-                    if (v != this) {
+                    if (v == this) {
                         if (c != null) {
                             back.push(c);
                             back.push(colors[0]);

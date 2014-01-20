@@ -311,11 +311,11 @@ public class PanelGemViewer extends JPanel {
                 }
                 long pathNumber = 0;
                 //StringBuffer upDownPath = new StringBuffer();
-                //GemVertex u = v.getNeighbour(path[0]);
-                //System.out.print("\n" + v.getLabel() + " " + u.getLabel());
+                GemVertex u = v.getNeighbour(path[0]);
+                System.out.print("\n" + path.length + " " + v.getLabel() + " " + u.getLabel());
                 for (int i = 1; i < path.length; ++i) {
-                    //u = u.getNeighbour(path[i]);
-                    //System.out.print(" " + u.getLabel());
+                    u = u.getNeighbour(path[i]);
+                    System.out.print(" " + u.getLabel());
                     if (i % 2 == 0) {
                         if (directions[path[i-1].getNumber()][path[i].getNumber()] == '\\') {
                             pathNumber = (pathNumber << 1) | 1;
@@ -339,7 +339,7 @@ public class PanelGemViewer extends JPanel {
                 sb.append(
                     v.getLabel() + " - " +
                     v.getNeighbour(colors[0]).getLabel() + 
-                    "(bainha " + v.getLabel() + "-" +
+                    " (bainha " + v.getLabel() + "-" +
                     v.getNeighbour(colors[1]).getLabel() + "): " +
                     pathNumber + "\n"
                 );

@@ -49,8 +49,8 @@ while retries < 45:
                                stdout=outfile,
                                stderr=errfile,
                                )
-        if args.err: subprocess.Popen(['x-terminal-emulator', '-e', 'tail -f --pid='+str(jvm.pid)+' '+outfilename]);
-        if args.out: subprocess.Popen(['x-terminal-emulator', '-e', 'tail -f --pid='+str(jvm.pid)+' '+errfilename]);
+        if args.out: subprocess.Popen(['x-terminal-emulator', '-e', 'tail -f --pid='+str(jvm.pid)+' '+outfilename]);
+        if args.err: subprocess.Popen(['x-terminal-emulator', '-e', 'tail -f --pid='+str(jvm.pid)+' '+errfilename]);
     try:
         java_gateway = JavaGateway(GatewayClient(port=java_gateway_port))
         java_name = java_gateway.jvm.System.getProperty("java.runtime.name")
