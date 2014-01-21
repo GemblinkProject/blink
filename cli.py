@@ -1,3 +1,5 @@
+#!/usr/bin/python2.7
+
 import argparse
 import subprocess
 from py4j.java_gateway import (JavaGateway, GatewayClient, Py4JNetworkError)
@@ -118,6 +120,13 @@ try:
     readline.read_history_file(histfilename)
 except IOError:
     pass
+
+def new_display_hook(x):
+    if x is not None:
+        print x
+        functions['_'] = x
+
+sys.displayhook = new_display_hook
 
 code.interact(banner="Python CLI for GemBlink", local=functions)
 
