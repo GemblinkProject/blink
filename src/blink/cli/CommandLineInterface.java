@@ -139,7 +139,8 @@ public class CommandLineInterface {
                              new FunctionGemFromNumCode(),
                              new FunctionSaveTxt(),
                              new FunctionLoadTxt(),
-                             new FunctionSimplify()
+                             new FunctionSimplify(),
+                             new FunctionClone()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);
@@ -180,6 +181,7 @@ public class CommandLineInterface {
     public void execute(String script) {
         ByteArrayInputStream is = new java.io.ByteArrayInputStream(script.getBytes());
         try {
+
             _parser.ReInit(is);
             NodeScript nodeScript = _parser.Script();
             _currentCommand = script;
