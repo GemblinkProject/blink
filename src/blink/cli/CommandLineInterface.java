@@ -140,7 +140,8 @@ public class CommandLineInterface {
                              new FunctionSaveTxt(),
                              new FunctionLoadTxt(),
                              new FunctionSimplify(),
-                             new FunctionClone()
+                             new FunctionClone(),
+                             new FunctionBettiNumber()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);

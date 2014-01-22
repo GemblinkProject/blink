@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import blink.BlinkEntry;
+import blink.Gem;
 import blink.GBlink;
 import blink.HomologyGroup;
 
@@ -42,8 +43,10 @@ public class FunctionHomologyGroup extends Function {
                     blinks.add((GBlink) o);
                 }
             }
+        } else if (a instanceof Gem) {
+            return ((Gem) a).homologyGroup().toString();
         } else
-            throw new EvaluationException("first argument of qi must be");
+            throw new EvaluationException("first argument must be blink, list or gem");
 
         if (blinks.size() > 1) {
             ArrayList<HomologyGroup> hgs = new ArrayList<HomologyGroup>();
@@ -55,5 +58,21 @@ public class FunctionHomologyGroup extends Function {
             return blinks.get(0).copy().homologyGroupFromGBlink();
         } else
             throw new RuntimeException();
+    }
+}
+
+class FunctionBettiNumber extends Function {
+    public FunctionBettiNumber() {
+        super("betti","Betti number of a gem");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        Object a = params.get(0);
+
+        if (a instanceof Gem) {
+            return new Integer(((Gem) a).homologyGroup().getBettiNumber());
+        } else
+            throw new EvaluationException("first argument must be gem");
+
     }
 }
