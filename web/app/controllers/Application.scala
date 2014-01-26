@@ -14,9 +14,9 @@ object Application extends Controller {
     val g = new Gem(1,1,1,1)
     val a = new ArrayList[Gem]
     a.add(g)
-    f.hardwork(a, new DataMap)
+    //f.hardwork(a, new DataMap)
     w += 1
-    Ok(views.html.index("Your new application is ready." + w))
+    Ok(views.html.index())
   }
 
 }

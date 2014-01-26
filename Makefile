@@ -38,6 +38,9 @@ browser: $(play)
 	@(sleep 5; x-www-browser "http://localhost:$(p)")&
 	@cd web; export _JAVA_OPTIONS="-Xmx$(m)"; ../$(play) "start $(p)"
 
+browserdev: $(play)
+	@cd web; export _JAVA_OPTIONS="-Xmx$(m)"; ../$(play) "run $(p)"
+
 $(play):
 	mkdir -p aux
 	cd aux; wget "http://downloads.typesafe.com/play/$(playv)/play-$(playv).zip" -O "play-$(playv).zip"
