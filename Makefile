@@ -10,18 +10,47 @@ space:= $(empty) $(empty)
 LIBS2=$(addprefix $(ROOT)/lib/, $(LIBS))
 LIBS3=$(subst $(space),$(comma),$(LIBS2))
 # LIBS2=$(patsubst %, $(ROOT)/lib/%, $(LIBS))
+JFILES:=$(shell find src | egrep "[.]java$$")
+SFILES:=$(shell find src | egrep "[.]scala$$")
+
+scalav:=scala-2.10.3
+playv:=2.2.1
+scalac:=aux/$(scalav)/bin/scalac
+scalae:=aux/$(scalav)/bin/scala
+play:=aux/play-$(playv)/play
+p?=9000
+m?=12000m
 
 all:
-	find . | egrep "[.]java$$" > file.list
-	javac -XDignore.symbol.file -classpath $(LIBS3):src/. @file.list
+	@# find ./src | egrep "[.]java$$" > file.list
+	@javac -classpath $(LIBS3):src -d bin $(JFILES)
+
+scala: $(scalac)
+	@# find ./src | egrep "[.]java$$|[.]scala$$" > file.list
+	@$(scalac) -classpath $(LIBS3):src -d bin $(JFILES) $(SFILES)
+
+$(scalac): 
+	mkdir -p aux
+	cd aux; wget "http://www.scala-lang.org/files/archive/$(scalav).tgz" -O "$(scalav).tgz"
+	cd aux; tar -zxvf "$(scalav).tgz"
+
+browser: $(play)
+	@(sleep 5; x-www-browser "http://localhost:$(p)")&
+	@cd web; export _JAVA_OPTIONS="-Xmx$(m)"; ../$(play) "start $(p)"
+
+$(play):
+	mkdir -p aux
+	cd aux; wget "http://downloads.typesafe.com/play/$(playv)/play-$(playv).zip" -O "play-$(playv).zip"
+	cd aux; unzip "play-$(playv).zip"
 
 #echo $(LIBS3)
 # javac -classpath $(LIBS3):src/. src/blink/*.java 
 # find src/. | grep java$ | grep -v "#" | xargs -I {} -t javac -classpath $(LIBS3):$(ROOT)/src {}
 
-
 run:
-	java -classpath $(LIBS3):src/. blink/cli/CommandLineInterface
+	java -Xmx$(m) -classpath $(LIBS3):bin blink/cli/CommandLineInterface
 
+runs:
+	$(scalae) -Xmx$(m) -classpath $(LIBS3):bin blink/cli/CommandLineInterface
 
 

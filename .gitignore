@@ -1,3 +1,6 @@
-/bin
+aux
+bin
 file.list
 *.class
+.classpath
+.project

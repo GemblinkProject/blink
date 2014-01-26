@@ -150,7 +150,7 @@ public class TryToConnectGemsFromTheSameHGQI {
                             //AudioPlayer.player.start(as);
                             //AudioPlayer.player.stop(as);
 
-                            Library.playSound("solucao.wav",3000);
+                            //Library.playSound("solucao.wav",3000);
                             /*
                             Toolkit.getDefaultToolkit().beep();
                             Toolkit.getDefaultToolkit().beep();

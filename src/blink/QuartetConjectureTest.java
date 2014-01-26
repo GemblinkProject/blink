@@ -67,7 +67,7 @@ public class QuartetConjectureTest {
 
     public static void main(String[] args)  throws SQLException, ClassNotFoundException, IOException {
 
-        Library.playSound("tada.wav",1000L);
+        //Library.playSound("tada.wav",1000L);
         //new PopulateDBWithPrimeStatus();
         System.exit(0);
     }

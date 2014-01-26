@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
+//import sun.audio.AudioPlayer;
+//import sun.audio.AudioStream;
 
 /**
  * <p>Title: </p>
@@ -98,6 +98,7 @@ public class Library {
             return input+fill;
     }
 
+    /*
     public static void playSound(String fileName, long waitPeriod) {
         try {
             InputStream in = new FileInputStream(fileName);
@@ -109,9 +110,10 @@ public class Library {
             ex.printStackTrace();
         }
     }
+    */
 
     public static void main(String[] args) {
-        playSound("solucao.wav",2000);
+        //playSound("solucao.wav",2000);
     }
 
 }

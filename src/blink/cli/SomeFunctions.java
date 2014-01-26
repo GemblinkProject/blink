@@ -537,7 +537,7 @@ class FunctionAttractor extends Function {
                         System.out.println(solution);
 
                         // cantar
-                        Library.playSound("solucao.wav", 2000);
+                        //Library.playSound("solucao.wav", 2000);
 
                         if (export != null) {
                             pw.println(solution);
@@ -4379,7 +4379,7 @@ class FunctionSearchPath extends Function {
                            //AudioPlayer.player.start(as);
                            //AudioPlayer.player.stop(as);
 
-                           Library.playSound("solucao.wav", 3000);
+                           //Library.playSound("solucao.wav", 3000);
                            /*
                                                        Toolkit.getDefaultToolkit().beep();
                                                        Toolkit.getDefaultToolkit().beep();
