@@ -55,6 +55,7 @@ import blink.GBlinkVertex;
 import blink.Gem;
 import blink.GemColor;
 import blink.GemEntry;
+import blink.GemExhaustiveSimplifier;
 import blink.GemGraph;
 import blink.GemPackedLabelling;
 import blink.GemPathEntry;
@@ -167,6 +168,15 @@ class FunctionGem extends Function {
             }
         }
         else if (params.size() == 2) {
+        	if (params.get(0) instanceof GBlink) {
+        		ArrayList<Object> nparams = new ArrayList<Object>();
+        		nparams.add(params.get(0));
+        		Gem g = (Gem)hardwork(nparams, localData);
+        		GemExhaustiveSimplifier exhaustive_simplifier = 
+					new GemExhaustiveSimplifier(g, ((Integer)params.get(1)).intValue());
+
+				return exhaustive_simplifier.getBestAttractorFound();
+        	}
             Gem gem = App.getRepositorio().getGemEntryByCatalogNumber(
                     ((Number) params.get(0)).intValue(),
                     ((Number) params.get(1)).intValue(),
@@ -4327,6 +4337,7 @@ class FunctionSearchPath extends Function {
        // searchPath(75610, 75611, r=3, u=1, t=5, connect=75623)
        // S = {75610, 75611}
        // testSet = S \cup {75623}
+
        //
        
        HashSet<Long> testSet = new HashSet<Long>();
