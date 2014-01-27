@@ -17,8 +17,8 @@ parser.add_argument('--out', help='open a terminal with the jvm stdout',
                     const=1, default=0, dest='out', action='store_const')
 parser.add_argument('--err', help='open a terminal with the jvm stderr',
                     const=1, default=0, dest='err', action='store_const')
-parser.add_argument('--mem', help='max size of JVM heap memory',
-                    default="8000m", dest='max_mem')
+parser.add_argument('--mem', help='max size of JVM heap memory in GB',
+                    default="8", dest='max_mem')
 args = parser.parse_args()
 
 # Add path with python modules for blink
@@ -30,7 +30,7 @@ if path not in sys.path:
 
 # Open a JVM with the modules loaded and open gateway
 java_cmd = open('run').readlines()[0].split(' ')
-java_cmd.insert(1, '-Xmx'+args.max_mem)
+java_cmd.insert(1, '-Xmx'+args.max_mem+'000m')
 java_cmd[-2] += ':lib/py4j0.8.jar' # add library py4j
 java_cmd[-1] = 'blink/cli/PythonBridge'
 

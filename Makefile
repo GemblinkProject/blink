@@ -19,7 +19,8 @@ scalac:=aux/$(scalav)/bin/scalac
 scalae:=aux/$(scalav)/bin/scala
 play:=aux/play-$(playv)/play
 p?=9000
-m?=12000m
+m?=12
+b?=1
 
 all:
 	@# find ./src | egrep "[.]java$$" > file.list
@@ -35,11 +36,11 @@ $(scalac):
 	cd aux; tar -zxvf "$(scalav).tgz"
 
 browser: $(play)
-	@(sleep 5; x-www-browser "http://localhost:$(p)")&
-	@cd web; export _JAVA_OPTIONS="-Xmx$(m)"; ../$(play) "start $(p)"
+	$(if $(b), @(sleep 5; x-www-browser "http://localhost:$(p)")&)
+	@cd web; export _JAVA_OPTIONS="-Xmx$(m)000m"; ../$(play) "start $(p)"
 
 browserdev: $(play)
-	@cd web; export _JAVA_OPTIONS="-Xmx$(m)"; ../$(play) "run $(p)"
+	@cd web; export _JAVA_OPTIONS="-Xmx$(m)000m"; ../$(play) "run $(p)"
 
 $(play):
 	mkdir -p aux
@@ -51,9 +52,9 @@ $(play):
 # find src/. | grep java$ | grep -v "#" | xargs -I {} -t javac -classpath $(LIBS3):$(ROOT)/src {}
 
 run:
-	java -Xmx$(m) -classpath $(LIBS3):bin blink/cli/CommandLineInterface
+	java -Xmx$(m)000m -classpath $(LIBS3):bin blink/cli/CommandLineInterface
 
 runs:
-	$(scalae) -Xmx$(m) -classpath $(LIBS3):bin blink/cli/CommandLineInterface
+	$(scalae) -Xmx$(m)000m -classpath $(LIBS3):bin blink/cli/CommandLineInterface
 
 
