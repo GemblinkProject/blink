@@ -111,21 +111,24 @@ reserved_words = dir(__builtins__) + keyword.kwlist
 
 ## FIXME
 
-def bigons_and_bainhas_for_gems(a, b, filename = None, use_only_first_perm = False):
-    """Shortcut to bigons_and_bainhas([gem(i) for i in range(a,b)])"""
-    return bigons_and_bainhas([gem_(i) for i in range(a,b)], filename, use_only_first_perm)
+def bbgems(n_v, idx_s, idx_f, filename, use_only_first_perm = False):
+    """Shortcut for bigons_and_bainhas([gem(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s)"""
+    return bigons_and_bainhas([gem_(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s, use_only_first_perm)
+	
 
-def bigons_and_bainhas(gems, filename = None, use_only_first_perm = True):
+def bigons_and_bainhas(gems, filename = None, idx_start = 1, use_only_first_perm = False):
     """Create html with info about bingos and bainhas for all gems (parameter)
     Insert a page break after each gem information"""
     
     ret = ""
     count = 1
     for g in gems:
-        if count == len(gems):
+        if count == 1:
             ret += '<p style="page-break-after:avoid">'
         else:
             ret += '<p style="page-break-after:always">'
+        ret += '<h3>Gem '+str(idx_start)+' with '+str(g.getNumVertices())+' vertices</h3>'
+        idx_start += 1
         count += 1
         if use_only_first_perm:
             ret += bigons_(g, 0).replace("\n", '<br />')
@@ -134,7 +137,7 @@ def bigons_and_bainhas(gems, filename = None, use_only_first_perm = True):
             for i in range(4):
                 ret += bigons_(g, i).replace("\n", '<br />')
                 ret += bainhas_(g, i).replace("\n", '<br />')
-        ret += '</p>'
+        ret += "</p>\n"
     if filename:
         f = open(filename, "w"	)
         f.write(ret)
@@ -148,7 +151,7 @@ functions = {
     'flush_stderr': flush_stderr,
     'flush_stdout': flush_stdout,
     'bigons_and_bainhas': bigons_and_bainhas,
-    'bigons_and_bainhas_for_gems': bigons_and_bainhas_for_gems,
+    'bbgems': bbgems
 }
 
 try:
