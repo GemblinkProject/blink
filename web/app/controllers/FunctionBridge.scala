@@ -1,6 +1,6 @@
 package controllers
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, JsValue, Format, Reads, Writes}
 import AuxiliarFormats._
 
 abstract class FunctionJsonBridge {
@@ -40,4 +40,3 @@ object FunctionExampleGetFromList extends FunctionBridge[(List[Int], Int), Int] 
     }
   }
 }
-

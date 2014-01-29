@@ -7,7 +7,9 @@
 	<DIV id="tabpanels">
 		<DIV id="tab1" class="tab-panel hidden">
 			<DIV class="ui-layout-north ui-widget">
-				<DIV class="toolbar ui-widget-content ui-state-active"></DIV>
+				<DIV class="toolbar ui-widget-content ui-state-active">
+					
+				</DIV>
 			</DIV>
 			<DIV class="ui-layout-south ui-widget">
 				<DIV class="toolbar ui-widget-content ui-state-default">
@@ -23,12 +25,16 @@
 				<DIV class="ui-layout-center">
 					<DIV class="ui-widget-header ui-corner-top">Functions</DIV>
 					<DIV class="ui-widget-content"><ul class="ztree" id="menu-functions"></ul></DIV>
-					<DIV class="ui-widget-footer ui-widget-header ui-corner-bottom"><input type=text id=functions-filter /></DIV>
+					<DIV class="ui-widget-footer ui-widget-header ui-corner-bottom">
+						<input type=text id=functions-filter />
+					</DIV>
 				</DIV>
 				<DIV class="ui-layout-south">
 					<DIV class="ui-widget-header ui-corner-top">Variables</DIV>
-					<DIV class="ui-widget-content"><input type=text id="menu-variables" /></DIV>
-					<DIV id="load-session-button" class="ui-widget-footer ui-widget-header ui-corner-bottom clickable">Load session</DIV>
+					<DIV class="ui-widget-content"><ul class="ztree" id="menu-variables"></ul></DIV>
+					<DIV class="ui-widget-footer ui-widget-header ui-corner-bottom clickable">
+						<input type=text id=variables-filter />
+					</DIV>
 				</DIV>
 			</DIV>
 			</DIV>

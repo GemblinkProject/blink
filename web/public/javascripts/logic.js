@@ -6,30 +6,37 @@ function nodeDfs(func, n) {
 }
 
 var lastFilterVal = ""
-function filterFunctions() {
-	var zTree = $.fn.zTree.getZTreeObj("menu-functions")
-	var filter = $.trim($("#functions-filter").val())
+function filterFunctions(filterVal, zTree) {
+	var filter = $.trim(filterVal)
 	if (filter == lastFilterVal) return
 	lastFilterVal = filter
 	
 	var nodeList = zTree.getNodesByParam("isHidden", true)
 	zTree.showNodes(nodeList)
-	zTree.expandAll(false)
+	//zTree.expandAll(false)
+	
+	nodeList = zTree.getNodes()
+	var func = function(n) {
+		n.highlight = false
+		n.expanded = false
+		n.visible = false
+	}
+	for (var i in nodeList) {
+		nodeDfs(func, nodeList[i])
+	}
 	
 	var nodeList = zTree.getNodesByParamFuzzy('name', filter)
-	var visible = {}
-	var func = function(n) {
-		visible[n.id] = true
-	}	
+	func = function(n) {
+		n.visible = true
+	}
 	for (var i in nodeList) {
 		var n = nodeList[i]
 		n.highlight = true
 		zTree.updateNode(n)
-		zTree.expandNode(n, true)
 		nodeDfs(func, n)
 		while (n) {
-			visible[n.id] = true
-			zTree.expandNode(n, true)
+			n.visible = true
+			n.expanded = true
 			n = n.getParentNode()
 		}
 	}
@@ -37,7 +44,10 @@ function filterFunctions() {
 	nodeList = zTree.getNodes()
 	var hiddenNodes = []
 	func = function(n) {
-		if (!visible[n.id]) hiddenNodes.push(n)
+		if (!n.visible) hiddenNodes.push(n)
+		else zTree.updateNode(n)
+		if (n.expanded) zTree.expandNode(n, true)
+		else zTree.expandNode(n, false)
 	}
 	for (var i in nodeList) {
 		nodeDfs(func, nodeList[i])
@@ -48,7 +58,18 @@ function filterFunctions() {
 $(function() {
 	doUiLogic()
 	
-	$("#functions-filter").change(filterFunctions);
+	$("#functions-filter").change(function() {
+		filterFunctions(
+			$("#functions-filter").val(),
+			$.fn.zTree.getZTreeObj("menu-functions")
+		)
+	})
+	$("#variables-filter").change(function() {
+		filterFunctions(
+			$("#variables-filter").val(),
+			$.fn.zTree.getZTreeObj("menu-variables")
+		)
+	})
 	
 	var setting = {
 		data: {
@@ -87,6 +108,5 @@ $(function() {
 	
 	w.addNodes(null, [{name:"pNode 1"}])
 	
-	
-	$('#main-content').append('<input title="asdasd"/>')
+	$.fn.zTree.init($("#menu-variables"), setting, zNodes);
 });
