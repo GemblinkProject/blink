@@ -23,10 +23,12 @@ m?=12
 b?=1
 
 all:
+	@mkdir -p bin
 	@# find ./src | egrep "[.]java$$" > file.list
 	@javac -classpath $(LIBS3):src -d bin $(JFILES)
 
 scala: $(scalac)
+	@mkdir -p bin
 	@# find ./src | egrep "[.]java$$|[.]scala$$" > file.list
 	@$(scalac) -classpath $(LIBS3):src -d bin $(JFILES) $(SFILES)
 
