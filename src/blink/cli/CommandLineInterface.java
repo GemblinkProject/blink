@@ -141,7 +141,9 @@ public class CommandLineInterface {
                              new FunctionLoadTxt(),
                              new FunctionSimplify(),
                              new FunctionClone(),
-                             new FunctionBettiNumber()
+                             new FunctionBettiNumber(),
+                             new FunctionBigons(),
+                             new FunctionBainhas()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);

@@ -178,7 +178,7 @@ public class PanelGemViewer extends JPanel {
         bottomPanel.add(new JButton(new SimplifyGem(this,_gem)));
         bottomPanel.add(new JButton(new ResolveGem(this,_gem)));
         bottomPanel.add(new JButton(new SaveEPS(this,_gem)));
-        bottomPanel.add(new JButton(new SavePDFContext(this.getInfoBigons(), _view)));
+        bottomPanel.add(new JButton(new SavePDFContext(this.getInfoBigonsAndBainhas(), _view)));
 
 
         String code;
@@ -201,8 +201,7 @@ public class PanelGemViewer extends JPanel {
 	        tp.add(this.getInfoPanel(),"Info");
    	     tp.add(this.getInfoPanel2(),"Diff To S3");
    	  }
-   	  tp.add(this.getInfoBigons(), "Bigons");
-   	  tp.add(this.getInfoBainhas(), "Bainhas");
+   	  tp.add(this.getInfoBigonsAndBainhas(), "Bigons and Bainhas");
         /*if (showStrings) {
             PanelString ps = new PanelString(_gem); // this won't update
             tp.add(ps, "Strings " + ps.getNumberOfStrings());
@@ -232,221 +231,11 @@ public class PanelGemViewer extends JPanel {
         this.add(tp,BorderLayout.CENTER);
     }
 
-    private static void appendBigons(GemVertex v, GemColor c1, GemColor c2, GemColor c3, StringBuffer sb) {
-        if (v.getFlag()) {
-            sb.append("\n");
-            return;
-        }
-        v.setFlag(true);
-        sb.append(v.getLabel() + ", ");
-        appendBigons(v.getNeighbour(c2), c2, c1, c3, sb);
-        appendBigons(v.getNeighbour(c3), c3, c1, c2, sb);
-        /*
-        ComponentRepository componentRepository = _gem.getComponentRepository();
-        ArrayList<Component> bigons = componentRepository.getBigons(c1, c2);
-        for (Component bigon : bigons) {
-            ArrayList<GemVertex> vertexes = bigon.getVerticesFromBigon();
-            for (GemVertex v : vertexes) {
-                sb.append(v.getLabel() + ", ");
-            }
-            sb.append("\n");
-        }
-        */
-    }
-    
-    private JPanel getInfoBainhas() {
+    private JPanel getInfoBigonsAndBainhas() {
         final StringBuffer sb = new StringBuffer();
-        Gem gem = _gem.copy();
-        
-        int[][] colorsPermNumber = {
-            {0,1,2,3}, {1,0,3,2}, {2,3,0,1}, {3,2,1,0}
-        };
-            
-        GemColor[][] colorsPerm = new GemColor[4][4];
         for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                colorsPerm[i][j] = GemColor.getByNumber(
-                    colorsPermNumber[i][j]
-                );
-            }
-        }
-        for (GemColor[] colors : colorsPerm) {
-            String permutacao = "(" +
-                colors[0].getNumber() + "," + colors[1].getNumber() + "," +
-                colors[2].getNumber() + "," + colors[3].getNumber() + ")";
-            sb.append("Bainhas usando permutacao "+permutacao+":\n");
-            GemColor trigonColors[] = {colors[1], colors[2], colors[3]};
-            
-            GemVertex[] vertexes = gem.getVertices().toArray(new GemVertex[0]);
-            Arrays.sort(vertexes);
-            for (GemVertex v: vertexes) {
-                if (v.getLabel()%2 == 0) {
-                    continue;
-                }
-                GemColor[] path = v.bfsPathFromC1ByLeft(v.getNeighbour(colors[0]), trigonColors);
-                if (path == null) {
-                    sb.append(
-                        v.getLabel() + " - " +
-                        v.getNeighbour(colors[0]).getLabel() + 
-                        "(bainha " + v.getLabel() + "-" +
-                        v.getNeighbour(colors[1]).getLabel() + "): " +
-                        "No path!\n"
-                    );
-                    continue;
-                }
-                if (path.length > 63) {
-                    sb.append(
-                        v.getLabel() + " - " +
-                        v.getNeighbour(colors[0]).getLabel() + 
-                        "(bainha " + v.getLabel() + "-" +
-                        v.getNeighbour(colors[1]).getLabel() + "): " +
-                        "Path too large!\n"
-                    );
-                    continue;
-                }
-                char[][] directions = new char[4][4];
-                for (int i = 0; i < 3; ++i) {
-                    directions[trigonColors[i].getNumber()][trigonColors[(i+1)%3].getNumber()] = '\\'; // Left
-                    directions[trigonColors[(i+1)%3].getNumber()][trigonColors[i].getNumber()] = '/'; // Right
-                }
-                long pathNumber = 0;
-                //StringBuffer upDownPath = new StringBuffer();
-                GemVertex u = v.getNeighbour(path[0]);
-                System.out.print("\n" + path.length + " " + v.getLabel() + " " + u.getLabel());
-                for (int i = 1; i < path.length; ++i) {
-                    u = u.getNeighbour(path[i]);
-                    System.out.print(" " + u.getLabel());
-                    if (i % 2 == 0) {
-                        if (directions[path[i-1].getNumber()][path[i].getNumber()] == '\\') {
-                            pathNumber = (pathNumber << 1) | 1;
-                        } else {
-                            pathNumber = (pathNumber << 1);
-                        }
-                        //upDownPath.append(
-                        //    directions[path[i-1].getNumber()][path[i].getNumber()]
-                        //);
-                    } else {
-                        if (directions[path[i].getNumber()][path[i-1].getNumber()] == '\\') {
-                            pathNumber = (pathNumber << 1) | 1;
-                        } else {
-                            pathNumber = (pathNumber << 1);
-                        }
-                        //upDownPath.append(
-                        //    directions[path[i].getNumber()][path[i-1].getNumber()]
-                        //);
-                    }
-                }
-                sb.append(
-                    v.getLabel() + " - " +
-                    v.getNeighbour(colors[0]).getLabel() + 
-                    " (bainha " + v.getLabel() + "-" +
-                    v.getNeighbour(colors[1]).getLabel() + "): " +
-                    pathNumber + "\n"
-                );
-            }
-        }
-        
-        JTextArea ta = new JTextArea();
-        ta.setFont(new Font("Courier New",Font.PLAIN,14));
-        ta.setText(sb.toString());
-        JPanel bottomPanel = new JPanel();
-		JButton saveButton = new JButton(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser=new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				chooser.setFileFilter(new FileNameExtensionFilter("Text File", "txt"));
-				chooser.showSaveDialog(null);
-				String path=chooser.getSelectedFile().getAbsolutePath();
-				if (path == null) {
-					return;
-				}
-				PrintWriter out;
-				try {
-					out = new PrintWriter(path);
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
-					return;
-				}
-				out.println(sb.toString());
-				out.close();
-			}
-		});
-		saveButton.setLabel("Save");
-        bottomPanel.add(saveButton);
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(new JScrollPane(ta),BorderLayout.CENTER);
-        panel.add(bottomPanel,BorderLayout.SOUTH);
-        return panel;
-    }
-    
-    private JPanel getInfoBigons() {
-        final StringBuffer sb = new StringBuffer();
-        Gem gem = _gem.copy();
-        int[][] colorsPermNumbers = {
-            {0,1,2,3}, {1,0,3,2}, {2,3,0,1}, {3,2,1,0}
-        };
-            
-        GemColor[][] colorsPerm = new GemColor[4][4];
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                colorsPerm[i][j] = GemColor.getByNumber(
-                    colorsPermNumbers[i][j]
-                );
-            }
-        }
-
-        char[][] colorPairs = {
-        		{'-','a','b','c'},
-        		{'A','-','d','e'},
-        		{'B','D','-','f'},
-        		{'C','E','F','-'}
-        };
-        for (GemColor[] colors : colorsPerm) {
-            sb.append("Bigons using fourth color (0) as " + colors[0] + " ("+ colors[0].getNumber() +"):\n");
-            
-            int maxSize = 0;
-            GemVertex[][][] bigons = gem.getBigons(colors[1], colors[2], colors[3]);
-            
-            HashMap<GemVertex, HashMap<GemColor, Integer>> faces = new HashMap<GemVertex, HashMap<GemColor, Integer>>();
-            for (GemVertex v: gem.getVertices()) {
-                faces.put(v, new HashMap<GemColor, Integer>());
-            }
-            for (int i = 0; i < 3; ++i) {
-                for (int j = 0; j < bigons[i].length; ++j) {
-                    for (int k = 0; k < bigons[i][j].length; ++k) {
-                        faces.get(bigons[i][j][k]).put(colors[(i+(k%2))%3+1], new Integer(j));
-                    }
-                }
-            }
-            
-            for (int i = 0; i < 3; ++i) {
-            	sb.append("Bigons " + colors[i+1].getNumber() + " - " + colors[(i+1)%3+1].getNumber() + " in anticlockwise order:\n");
-		HashMap<Integer, Integer> amount = new HashMap<Integer, Integer>();
-		
-            	for (int j = 0; j < bigons[i].length; ++j) {
-			Integer lastInteger = amount.get(new Integer(bigons[i][j].length));
-			int last = 0;
-			if (lastInteger != null) last = lastInteger.intValue();
-			amount.put(new Integer(bigons[i][j].length), new Integer(last+1));
-            		sb.append(colorPairs[colors[i+1].getNumber()][colors[(i+1)%3+1].getNumber()] + "" + (j+1) + ": ");
-            		char[] bigonPair = new char[2];
-            		bigonPair[0] = colorPairs[colors[(i+2)%3+1].getNumber()][colors[i+1].getNumber()];
-            		bigonPair[1] = colorPairs[colors[(i+1)%3+1].getNumber()][colors[(i+2)%3+1].getNumber()];
-            		for (int k = 0; k < bigons[i][j].length; ++k) {
-            			sb.append(bigons[i][j][k].getLabel() + " ");
-            			int counterFace = faces.get(bigons[i][j][(k+1)%bigons[i][j].length]).get(colors[(i+(k%2))%3+1]).intValue() + 1;
-            			sb.append("[" + bigonPair[k%2] + counterFace + "] ");
-            		}
-            		sb.append("size: " + bigons[i][j].length + "\n");
-    	            maxSize = Math.max(maxSize, bigons[i][j].length);
-            	}
-            	for(Entry<Integer, Integer> entry: amount.entrySet()) {
-            		sb.append(entry.getValue() + " bigon(s) of size " + entry.getKey() + "\n");
-            	}
-            }
-            
-            sb.append("Biggest bigon has size: " + maxSize + "\n\n");
+        	sb.append(GemInfo.bigons(_gem, i));
+        	sb.append(GemInfo.bainhas(_gem, i));
         }
         
         JTextArea ta = new JTextArea();

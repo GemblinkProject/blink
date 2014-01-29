@@ -57,6 +57,7 @@ import blink.GemColor;
 import blink.GemEntry;
 import blink.GemExhaustiveSimplifier;
 import blink.GemGraph;
+import blink.GemInfo;
 import blink.GemPackedLabelling;
 import blink.GemPathEntry;
 import blink.GemPathRepository;
@@ -5228,4 +5229,83 @@ class FunctionClone extends Function {
         }
     }
 }
+
+
+class FunctionBigons extends Function {
+    public FunctionBigons() {
+        super("bigons", "Get a string with bigons from a gem");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if(params.get(0) instanceof Gem) {
+            Gem g = (Gem) params.get(0);
+            if (params.size() >= 2 && params.get(1) instanceof Number) {
+            	int perm = (Integer)params.get(1);
+            	return GemInfo.bigons(g, perm);
+            } else {
+            	String ret = new String();
+            	for (int i = 0; i < 4; ++i) {
+            		ret += GemInfo.bigons(g, i);
+            	}
+            	return ret;
+           	}
+        } else {
+            throw new EvaluationException("Must receive a gem");
+        }
+    }
+}
+
+class FunctionBainhas extends Function {
+    public FunctionBainhas() {
+        super("bainhas", "Get a string with bainhas from a gem");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if(params.get(0) instanceof Gem) {
+           Gem g = (Gem) params.get(0);
+            if (params.size() >= 2 && params.get(1) instanceof Number) {
+            	int perm = (Integer)params.get(1);
+            	return GemInfo.bainhas(g, perm);
+            } else {
+            	String ret = new String();
+            	for (int i = 0; i < 4; ++i) {
+            		ret += GemInfo.bainhas(g, i);
+            	}
+            	return ret;
+           	}
+        } else {
+            throw new EvaluationException("Must receive a gem");
+        }
+    }
+}
+
+
 

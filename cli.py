@@ -12,6 +12,11 @@ import rlcompleter
 import os
 import code
 
+# Add path with python modules for blink
+path = os.path.join(os.environ['PWD'], 'pysrc/')
+if path not in sys.path:
+    sys.path.append(path)
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--out', help='open a terminal with the jvm stdout',
                     const=1, default=0, dest='out', action='store_const')
@@ -103,10 +108,49 @@ def java_cli_function(obj, java_gateway=java_gateway):
 
 # Append the suffix "_" to java cli functions to builtin functions or python keywords
 reserved_words = dir(__builtins__) + keyword.kwlist
+
+## FIXME
+
+def bigons_and_bainhas_for_gems(a, b, filename = None, use_only_first_perm = False):
+    """Shortcut to bigons_and_bainhas([gem(i) for i in range(a,b)])"""
+    return bigons_and_bainhas([gem_(i) for i in range(a,b)], filename, use_only_first_perm)
+
+def bigons_and_bainhas(gems, filename = None, use_only_first_perm = True):
+    """Create html with info about bingos and bainhas for all gems (parameter)
+    Insert a page break after each gem information"""
+    
+    ret = ""
+    count = 1
+    for g in gems:
+        if count == len(gems):
+            ret += '<p style="page-break-after:avoid">'
+        else:
+            ret += '<p style="page-break-after:always">'
+        count += 1
+        if use_only_first_perm:
+            ret += bigons_(g, 0).replace("\n", '<br />')
+            ret += bainhas_(g, 0).replace("\n", '<br />')
+        else:
+            for i in range(4):
+                ret += bigons_(g, i).replace("\n", '<br />')
+                ret += bainhas_(g, i).replace("\n", '<br />')
+        ret += '</p>'
+    if filename:
+        f = open(filename, "w"	)
+        f.write(ret)
+        f.close()
+    else:
+        return ret
+
+##
+
 functions = {
     'flush_stderr': flush_stderr,
     'flush_stdout': flush_stdout,
+    'bigons_and_bainhas': bigons_and_bainhas,
+    'bigons_and_bainhas_for_gems': bigons_and_bainhas_for_gems,
 }
+
 try:
     java_function_map = java_cli.getFunctionMap()
     function_names = java_function_map.getKeySet()
@@ -132,6 +176,10 @@ def new_display_hook(x):
         functions['_'] = x
 
 sys.displayhook = new_display_hook
+
+## FIXME
+for f in functions:
+    globals()[f+'_'] = functions[f]
 
 code.interact(banner="Python CLI for GemBlink", local=functions)
 
