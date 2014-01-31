@@ -111,7 +111,7 @@ reserved_words = dir(__builtins__) + keyword.kwlist
 
 ## FIXME
 
-def bbgems(n_v, idx_s, idx_f, filename, use_only_first_perm = False):
+def bsUNIVs(n_v, idx_s, idx_f, filename, use_only_first_perm = False):
     """Shortcut for bigons_and_bainhas([gem(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s)"""
     return bigons_and_bainhas([gem_(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s, use_only_first_perm)
 	
@@ -151,7 +151,7 @@ functions = {
     'flush_stderr': flush_stderr,
     'flush_stdout': flush_stdout,
     'bigons_and_bainhas': bigons_and_bainhas,
-    'bbgems': bbgems
+    'bsUNIVs': bsUNIVs
 }
 
 try:
