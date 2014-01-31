@@ -1169,6 +1169,19 @@ public class BlinkDB {
 		stmt.close();
 		return result;
 	}
+	
+	/**
+	 * Get gem from class
+	 */
+	public long getGemIDFromClass(int id, int numedges, int numorder) throws SQLException, IOException,
+	ClassNotFoundException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("select gem from class where id="+id+" and numedges="+numedges+" and numorder="+numorder);
+		if (rs.next()) {
+    		return rs.getLong(1);
+    	} else return 0;
+	}
 
 	/**
 	 * Get classes entries by id
