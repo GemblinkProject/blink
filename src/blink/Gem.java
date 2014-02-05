@@ -2690,6 +2690,77 @@ public class Gem implements Cloneable, Comparable {
         return result;
     }
 
+	/**
+	 *
+	 */
+	public Pair findAnyDoubleMeeting(GemColor J) {
+		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		ComponentRepository rep = getComponentRepository();
+		ArrayList<Component> bigons23 = rep.getBigons(GemColor.red, GemColor.green);
+		ArrayList<Component> bigons0J = rep.getBigons(GemColor.yellow, J);
+		ArrayList<Component> bigons1K = rep.getBigons(GemColor.blue, K);
+		int colorSet23 = GemColor.getColorSet(GemColor.red, GemColor.green);
+		int colorSet0J = GemColor.getColorSet(GemColor.yellow, J);
+		int colorSet1K = GemColor.getColorSet(GemColor.blue, K);
+
+		for (GemVertex u: getVertices()) {
+			for (GemVertex v: getVertices()) {
+				if (u.getComponent(colorSet23) != v.getComponent(colorSet23)
+					&& u.getComponent(colorSet0J) == v.getComponent(colorSet0J)
+					&& u.getComponent(colorSet1K) == v.getComponent(colorSet1K)) {
+					return new Pair(u, v);
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Pair fixPairSameParity(Pair uv, GemColor J) {
+		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		GemVertex u = (GemVertex)uv.getFirst();
+		GemVertex v = (GemVertex)uv.getSecond();
+		if (u.getLabel()%2 == v.getLabel()%2) return uv;
+		if (u.getLabel()%2 == 1) {
+			GemVertex tmp = u;
+			u = v;
+			v = tmp;
+		}
+		// v and w odd
+		GemVertex w = newVertex(getNumVertices()+1);
+		GemVertex z = newVertex(getNumVertices()+1);
+		w.setNeighbour(u, GemColor.yellow);
+		w.setNeighbour(u, K);
+		w.setNeighbour(z, GemColor.blue);
+		w.setNeighbour(z, J);
+		
+		z.setNeighbour(u.getNeighbour(GemColor.yellow), GemColor.yellow);
+		z.setNeighbour(u.getNeighbour(K), K);
+		z.setNeighbour(w, GemColor.blue);
+		z.setNeighbour(w, J);
+		
+		u.setNeighbour(w, GemColor.yellow);
+		u.setNeighbour(w, K);
+		return new Pair(z, w);
+	}
+	
+	public void/* Pair */ makeLocalizedAlmostTwisting(Pair uv, GemColor J) {
+		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		GemVertex u = (GemVertex)uv.getFirst();
+		GemVertex v = (GemVertex)uv.getSecond();
+		
+		GemVertex AJ = u.getNeighbour(J);
+		GemVertex A1 = u.getNeighbour(GemColor.blue);
+		GemVertex A0 = v.getNeighbour(GemColor.yellow);
+		GemVertex AK = v.getNeighbour(K);
+		
+		GemVertex BK = u.getNeighbour(K);
+		GemVertex B0 = u.getNeighbour(GemColor.yellow);
+		GemVertex B1 = v.getNeighbour(GemColor.blue);
+		GemVertex BJ = v.getNeighbour(J);
+		
+		GemVertex v1 = newVertex(getNumVertices()+1);
+	}
+
     /**
      * Tags the components of the graph with all possible combinations
      * then searches for the first dipole
