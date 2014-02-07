@@ -21,10 +21,56 @@ import java.util.Arrays;
  */
 public class GenerateQI {
 
-    public GenerateQI() {
-    }
-
+	static class BlinkBuffer {
+		ArrayList<BlinkEntry> bs;
+		QI[] qis;
+		int count;
+		
+		public void reset(ArrayList<BlinkEntry> bs) {
+			this.bs = bs;
+			qis = new QI[bs.size()];
+			count = 0;
+		}
+		
+		public synchronized int getCount() {
+			if (count == qis.length) {
+				System.out.print("!");
+				return -1;
+			}
+			System.out.print(".");
+			return count++;
+		}
+	}
+	
+	static class QICalculator extends Thread {
+		BlinkBuffer blinkBuffer;
+		QICalculator(BlinkBuffer blinkBuffer) {
+			this.blinkBuffer = blinkBuffer;
+		}
+		@Override
+		public void run() {
+			while (true) {
+				int blinkIdx = blinkBuffer.getCount();
+				if (blinkIdx == -1) break;
+				
+				BlinkEntry be = blinkBuffer.bs.get(blinkIdx);
+            	GBlink b = new GBlink(new MapWord(be.get_mapCode()));
+            	b.setColor((int) be.get_colors());
+                QI qi = b.optimizedQuantumInvariant(3, 8);
+                blinkBuffer.qis[blinkIdx] = qi;
+			}
+		}
+	}
+	
     public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, ClassNotFoundException {
+    	
+        int numThreads = 16;
+        if (args.length >= 2) {
+        	numThreads = Integer.parseInt(args[1]);
+        }
+        BlinkBuffer blinkBuffer = new BlinkBuffer();
+        QICalculator[] threads = new QICalculator[numThreads];
+    
         BlinkDB db = (BlinkDB) App.getRepositorio();
         long t0 = System.currentTimeMillis();
 
@@ -34,10 +80,9 @@ public class GenerateQI {
         ArrayList<QI> qis = App.getRepositorio().getQIs();
         for (QI q: qis)
             R.add(q);
-
+            
         HashMap<BlinkEntry, QI> _map = new HashMap<BlinkEntry, QI>();
 
-		// FIXME
         long blinkIDs[] = db.getBlinkIDsWithoutQI(Integer.parseInt(args[0]));
         int delta = 100;
         int count = 1;
@@ -52,19 +97,28 @@ public class GenerateQI {
             }
             System.out.println("");
             ArrayList<BlinkEntry> bs = db.getBlinksByIDsArray(curIDs);
-            // System.out.println(String.format("Retrieved %d blinks in %.2f sec.", bs.size(), (System.currentTimeMillis() - t) / 1000.0));
-
+            
             t = System.currentTimeMillis();
-
-            for (BlinkEntry be : bs) {
-                // System.out.println(String.format("QI %6d/%6d", ++j, n));
-                GBlink b = new GBlink(new MapWord(be.get_mapCode()));
-                b.setColor((int) be.get_colors());
-
-                QI qi = b.optimizedQuantumInvariant(3, 8);
-
-                System.out.println("Calculated "+count++);
-
+            
+            blinkBuffer.reset(bs);
+            for (int i = 0; i < numThreads; ++i) {
+            	threads[i] = new QICalculator(blinkBuffer);
+            	threads[i].start();
+            }
+            try {
+	            for (int i = 0; i < numThreads; ++i) {
+    				threads[i].join();
+    			}
+            } catch (InterruptedException e) {
+            	System.out.println("Problem!");
+            }
+			
+			System.out.println(String.format(" %.2f sec.", (System.currentTimeMillis() - t) / 1000.0));
+            for (int i = 0; i < bs.size(); ++i) {
+            	BlinkEntry be = bs.get(i);
+            
+                QI qi = blinkBuffer.qis[i];
+                
                 // add to repository
                 QI qiRep = R.add(qi);
                 if (qiRep == null)
@@ -74,15 +128,13 @@ public class GenerateQI {
                 _map.put(be, qiRep);
             }
 
-            System.out.println(String.format("Time to calculate QIs %.2f sec.", (System.currentTimeMillis() - t) / 1000.0));
-
             //
             ArrayList<QI> list = R.getList(); // get list of not persistent QIs
-            t = System.currentTimeMillis();
+            //t = System.currentTimeMillis();
             
             db.insertQIs(list);
             acum = acum+list.size();
-            System.out.println(String.format("Inserted %6d new QIs total QIs %6d in %.2f sec.", list.size(), acum, (System.currentTimeMillis() - t) / 1000.0));
+            System.out.println(String.format("Inserted %6d new QIs total QIs %6d in %.2f sec.", list.size(), acum, (System.currentTimeMillis() - t0) / 1000.0));
 
             // updating biEntry
             for (BlinkEntry be : bs) {
@@ -96,7 +148,7 @@ public class GenerateQI {
             // System.out.println(String.format("Updated QIs %d blinks in %.2f sec.", bs.size(), (System.currentTimeMillis() - t) / 1000.0));
 
             // update index
-            k = k+delta;
+            System.out.println("Calculated "+(k+curIDs.length)+" of "+blinkIDs.length+" blinks QI");
         }
 
         System.out.println(String.format("Total Time to calculate QIs %.2f sec.",(System.currentTimeMillis() - t0) / 1000.0));
@@ -113,7 +165,7 @@ class QIRepository {
      * Returns null if the qi is new to the repository
      * otherwise returns the already stored QI
      */
-    public QI add(QI qi) {
+    public synchronized QI add(QI qi) {
         long hashCode = qi.getHashCode();
         ArrayList<QI> list = _map.get(hashCode);
         if (list == null) {

@@ -127,8 +127,8 @@ public class BlinkDB {
 	public void insertQIs(ArrayList<QI> qis) throws SQLException, IOException {
 		if (qis.size() == 0)
 			return;
-		Connection con = getConnection();
 		long lastID = getLastQIID();
+		Connection con = getConnection();
 		con.setAutoCommit(false);
 		PreparedStatement stmt = con.prepareStatement("insert into qi (rmax, hashcode, dados, id) values (?,?,?,?)");
 		for (QI qi: qis) {
@@ -138,7 +138,7 @@ public class BlinkDB {
 			stmt.setLong(4, lastID+1);
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
-			if (rs.next()) {
+			while (rs.next()) {
 				lastID = rs.getLong(1);
 				qi.set_id(lastID);
 			}
@@ -495,7 +495,7 @@ public class BlinkDB {
 		ResultSet rs = stmt.executeQuery("select id from blink where qi = -1 limit " + limit);
 		long[] result = new long[limit];
 		int count = 0;
-		if (rs.next()) {
+		while (rs.next()) {
 			result[count++]=rs.getLong(1);
 		}
 		if (count < limit) {
