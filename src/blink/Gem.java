@@ -2717,6 +2717,8 @@ public class Gem implements Cloneable, Comparable {
 	
 	public Pair fixPairSameParity(Pair uv, GemColor J) {
 		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		GemColor c0 = GemColor.yellow;
+		GemColor c1 = GemColor.blue;
 		GemVertex u = (GemVertex)uv.getFirst();
 		GemVertex v = (GemVertex)uv.getSecond();
 		if (u.getLabel()%2 == v.getLabel()%2) return uv;

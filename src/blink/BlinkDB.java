@@ -111,21 +111,36 @@ public class BlinkDB {
 		stmt.close();
 	}
 
+	public long getLastQIID() throws SQLException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("select max(id) from qi");
+		long result = 0;
+		if (rs.next()) {
+			result = rs.getLong(1);
+		}
+		rs.close();
+		stmt.close();
+		return result;
+	}
 
 	public void insertQIs(ArrayList<QI> qis) throws SQLException, IOException {
 		if (qis.size() == 0)
 			return;
 		Connection con = getConnection();
+		long lastID = getLastQIID();
 		con.setAutoCommit(false);
-		PreparedStatement stmt = con.prepareStatement("insert into qi (rmax, hashcode, dados) values (?,?,?)");
+		PreparedStatement stmt = con.prepareStatement("insert into qi (rmax, hashcode, dados, id) values (?,?,?,?)");
 		for (QI qi: qis) {
 			stmt.setInt(1,qi.get_rmax());
 			stmt.setLong(2,qi.getHashCode());
 			stmt.setBytes(3, qi.getEntries());
+			stmt.setLong(4, lastID+1);
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
 			if (rs.next()) {
-				qi.set_id(rs.getLong(1));
+				lastID = rs.getLong(1);
+				qi.set_id(lastID);
 			}
 			rs.close();
 		}
@@ -323,6 +338,33 @@ public class BlinkDB {
 		stmt.close();
 		return result;
 	}
+	
+	public ArrayList<BlinkEntry> getBlinksByIDsArray(long[] ids) throws SQLException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		
+		String idsString = ""+ids[0];
+		for (int i = 1; i < ids.length; ++i) idsString += ","+ids[i];
+		
+		ResultSet rs = stmt.executeQuery("select id,mapcode,colors,numedges,hg,qi,comment,gem,mingem,catalogNumber from blink where id in ("+idsString+")");
+		ArrayList<BlinkEntry> result = new ArrayList<BlinkEntry>();
+		while (rs.next()) {
+			long id = rs.getInt(1);
+			String mapCode = rs.getString(2);
+			long colors = rs.getLong(3);
+			int numEdges = rs.getInt(4);
+			String hg = rs.getString(5);
+			long qi = rs.getLong(6);
+			String comment = rs.getString(7);
+			long gem = rs.getLong(8);
+			long mingem = rs.getLong(9);
+			int catalogNumber = rs.getInt(10);
+			result.add(new BlinkEntry(id,mapCode,colors,numEdges,hg,qi,gem,mingem,comment,catalogNumber));
+		}
+		rs.close();
+		stmt.close();
+		return result;
+	}
 
 
 	public ArrayList<BlinkEntry> getBlinksWithoutGemAndWithNumEdges(int numEdges) throws SQLException {
@@ -447,6 +489,24 @@ public class BlinkDB {
 		return result;
 	}
 
+	public long[] getBlinkIDsWithoutQI(int limit) throws SQLException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("select id from blink where qi = -1 limit " + limit);
+		long[] result = new long[limit];
+		int count = 0;
+		if (rs.next()) {
+			result[count++]=rs.getLong(1);
+		}
+		if (count < limit) {
+			long tmp[] = new long[count];
+			for (int i = 0 ; i < count; ++i) tmp[i] = result[i];
+			result = tmp;
+		}
+		rs.close();
+		stmt.close();
+		return result;
+	}
 
 	public long[] getMinMaxBlinkIDs() throws SQLException {
 		Connection con = getConnection();

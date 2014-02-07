@@ -227,7 +227,7 @@ public class GenerateMaps3TConnected {
     }
 
     public static void main(String[] args) throws Exception {
-        GenerateMaps3TConnected mg = new GenerateMaps3TConnected(6, 16);
+        GenerateMaps3TConnected mg = new GenerateMaps3TConnected(18, 20);
         mg.process();
         System.out.println(mg.getResult().size());
 //        ArrayList<MapPackedWord> maps = mg.getResult();

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Arrays;
 
 /**
  * <p>Title: </p>
@@ -36,18 +37,21 @@ public class GenerateQI {
 
         HashMap<BlinkEntry, QI> _map = new HashMap<BlinkEntry, QI>();
 
-        long minmax[] = db.getMinMaxBlinkIDs(); // {15231, 15231}; //db.getMinMaxIDs();
+		// FIXME
+        long blinkIDs[] = db.getBlinkIDsWithoutQI(Integer.parseInt(args[0]));
         int delta = 100;
         int count = 1;
         int acum = 0;
-        long k = minmax[0];
-        while (k <= minmax[1]) {
-
-            System.out.println(String.format("From id %d to id %d", k,k+delta-1));
-
+        for (int k = 0; k < blinkIDs.length; k += delta) {
 
             long t = System.currentTimeMillis();
-            ArrayList<BlinkEntry> bs = db.getBlinksByIDInterval(k, k+delta-1);
+            long[] curIDs = Arrays.copyOfRange(blinkIDs, k, Math.min(k+delta, blinkIDs.length));
+            System.out.print("Calc for ");
+            for (long x: curIDs) {
+            	System.out.print(" "+x);
+            }
+            System.out.println("");
+            ArrayList<BlinkEntry> bs = db.getBlinksByIDsArray(curIDs);
             // System.out.println(String.format("Retrieved %d blinks in %.2f sec.", bs.size(), (System.currentTimeMillis() - t) / 1000.0));
 
             t = System.currentTimeMillis();
@@ -75,6 +79,7 @@ public class GenerateQI {
             //
             ArrayList<QI> list = R.getList(); // get list of not persistent QIs
             t = System.currentTimeMillis();
+            
             db.insertQIs(list);
             acum = acum+list.size();
             System.out.println(String.format("Inserted %6d new QIs total QIs %6d in %.2f sec.", list.size(), acum, (System.currentTimeMillis() - t) / 1000.0));
