@@ -2743,22 +2743,134 @@ public class Gem implements Cloneable, Comparable {
 		return new Pair(z, w);
 	}
 	
-	public void/* Pair */ makeLocalizedAlmostTwisting(Pair uv, GemColor J) {
+	public Pair makeLocalizedAlmostTwisting(Pair uv, int J) {
+		return makeLocalizedAlmostTwisting(uv, GemColor.getByNumber(J));
+	}
+	
+	public Pair makeLocalizedAlmostTwisting(Pair uv, GemColor J) {
+		uv = fixPairSameParity(uv, J);
 		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		GemColor c0 = GemColor.yellow;
+		GemColor c1 = GemColor.blue;
 		GemVertex u = (GemVertex)uv.getFirst();
 		GemVertex v = (GemVertex)uv.getSecond();
 		
 		GemVertex AJ = u.getNeighbour(J);
-		GemVertex A1 = u.getNeighbour(GemColor.blue);
-		GemVertex A0 = v.getNeighbour(GemColor.yellow);
+		GemVertex A1 = u.getNeighbour(c1);
+		GemVertex A0 = v.getNeighbour(c0);
 		GemVertex AK = v.getNeighbour(K);
 		
 		GemVertex BK = u.getNeighbour(K);
-		GemVertex B0 = u.getNeighbour(GemColor.yellow);
-		GemVertex B1 = v.getNeighbour(GemColor.blue);
+		GemVertex B0 = u.getNeighbour(c0);
+		GemVertex B1 = v.getNeighbour(c1);
 		GemVertex BJ = v.getNeighbour(J);
 		
-		GemVertex v1 = newVertex(getNumVertices()+1);
+		GemVertex v1 = null;
+		if (u.getLabel()%2 == 0) {
+			v1 = newVertex(getNumVertices()+1);
+		}
+		GemVertex v2 = newVertex(getNumVertices()+1);
+		GemVertex v3 = newVertex(getNumVertices()+1);
+		GemVertex v4 = newVertex(getNumVertices()+1);
+		GemVertex v5 = newVertex(getNumVertices()+1);
+		GemVertex v6 = newVertex(getNumVertices()+1);
+		
+		GemVertex v7 = newVertex(getNumVertices()+1);
+		GemVertex v8 = newVertex(getNumVertices()+1);
+		GemVertex v9 = newVertex(getNumVertices()+1);
+		GemVertex v10 = newVertex(getNumVertices()+1);
+		GemVertex v11 = newVertex(getNumVertices()+1);
+		GemVertex v12 = newVertex(getNumVertices()+1);
+		if (u.getLabel()%2 == 1) {
+			v1 = newVertex(getNumVertices()+1);
+		}
+		
+		AJ.setNeighbour(u, J);
+		u.setNeighbour(AJ, J);
+		A1.setNeighbour(u, c1);
+		u.setNeighbour(A1, c1);
+		A0.setNeighbour(v, c0);
+		v.setNeighbour(A0, c0);
+		AK.setNeighbour(v, K);
+		v.setNeighbour(AK, K);
+		
+		u.setNeighbour(v1, K);
+		v1.setNeighbour(u, K);
+		u.setNeighbour(v7, c0);
+		v7.setNeighbour(u, c0);
+		v.setNeighbour(v1, c1);
+		v1.setNeighbour(v, c1);
+		v.setNeighbour(v7, J);
+		v7.setNeighbour(v, J);
+		
+		v1.setNeighbour(v2, J);
+		v2.setNeighbour(v1, J);
+		v1.setNeighbour(v2, c0);
+		v2.setNeighbour(v1, c0);
+		v7.setNeighbour(v8, c1);
+		v8.setNeighbour(v7, c1);
+		v7.setNeighbour(v8, K);
+		v8.setNeighbour(v7, K);
+		
+		v2.setNeighbour(v3, K);
+		v3.setNeighbour(v2, K);
+		v2.setNeighbour(v3, c1);
+		v3.setNeighbour(v2, c1);
+		v8.setNeighbour(v3, c0);
+		v3.setNeighbour(v8, c0);
+		v8.setNeighbour(v3, J);
+		v3.setNeighbour(v8, J);
+		
+		v9.setNeighbour(v4, c0);
+		v4.setNeighbour(v9, c0);
+		v9.setNeighbour(v4, J);
+		v4.setNeighbour(v9, J);
+		v9.setNeighbour(v10, c1);
+		v10.setNeighbour(v9, c1);
+		v9.setNeighbour(v10, K);
+		v10.setNeighbour(v9, K);
+		
+		v4.setNeighbour(v5, c1);
+		v5.setNeighbour(v4, c1);
+		v4.setNeighbour(v5, K);
+		v5.setNeighbour(v4, K);
+		v10.setNeighbour(v11, c0);
+		v11.setNeighbour(v10, c0);
+		v10.setNeighbour(v11, J);
+		v11.setNeighbour(v10, J);
+		
+		v5.setNeighbour(v6, J);
+		v6.setNeighbour(v5, J);
+		v5.setNeighbour(v12, c0);
+		v12.setNeighbour(v5, c0);
+		v11.setNeighbour(v6, c1);
+		v6.setNeighbour(v11, c1);
+		v11.setNeighbour(v12, K);
+		v12.setNeighbour(v11, K);
+		
+		v6.setNeighbour(BK, K);
+		BK.setNeighbour(v6, K);
+		v6.setNeighbour(B0, c0);
+		B0.setNeighbour(v6, c0);
+		v12.setNeighbour(B1, c1);
+		B1.setNeighbour(v12, c1);
+		v12.setNeighbour(BJ, J);
+		BJ.setNeighbour(v12, J);
+		
+		return new Pair(v3, v9);
+	}
+	
+	public GemVertex getVertexByLabel(int lbl) {
+		if (_vertices.get(lbl-1).getLabel() == lbl) {
+			return _vertices.get(lbl-1);
+		}
+		for (GemVertex v: _vertices) {
+			if (v.getLabel() == lbl) return v;
+		}
+		return null;
+	}
+	public Pair getPairByLabel(int l1, int l2) {
+		return new Pair(getVertexByLabel(l1), getVertexByLabel(l2));
 	}
 
     /**
