@@ -95,7 +95,7 @@ public class GenerateQI {
 		int limit = Integer.parseInt(args[0]);
         long blinkIDs[] = db.getBlinkIDsWithoutQI(limit, numedges);
         System.out.println("Found "+blinkIDs.length+" blinks without QI");
-        int delta = 3;
+        int delta = 100;
         int count = 1;
         int acum = 0;
         for (int k = 0; k < blinkIDs.length; k += delta) {
