@@ -111,10 +111,10 @@ public class BlinkDB {
 		stmt.close();
 	}
 
-	public long getLastQIID() throws SQLException {
+	public long getLastQIID(long idPrefix) throws SQLException {
 		Connection con = getConnection();
 		Statement stmt = con.createStatement();
-		ResultSet rs = stmt.executeQuery("select max(id) from qi");
+		ResultSet rs = stmt.executeQuery("select max(id) from qi where id < "+ (idPrefix+1 << 32));
 		long result = 0;
 		if (rs.next()) {
 			result = rs.getLong(1);
@@ -123,11 +123,16 @@ public class BlinkDB {
 		stmt.close();
 		return result;
 	}
-
+	
 	public void insertQIs(ArrayList<QI> qis) throws SQLException, IOException {
+		insertQIs(qis, 0);
+	}
+	
+	public void insertQIs(ArrayList<QI> qis, long idPrefix) throws SQLException, IOException {
 		if (qis.size() == 0)
 			return;
-		long lastID = getLastQIID();
+		long lastID = getLastQIID(idPrefix);
+		lastID = Math.max(lastID, idPrefix << 32);
 		Connection con = getConnection();
 		con.setAutoCommit(false);
 		PreparedStatement stmt = con.prepareStatement("insert into qi (rmax, hashcode, dados, id) values (?,?,?,?)");
@@ -136,12 +141,12 @@ public class BlinkDB {
 			stmt.setLong(2,qi.getHashCode());
 			stmt.setBytes(3, qi.getEntries());
 			stmt.setLong(4, lastID+1);
+			System.out.println((idPrefix << 32) + " insert " + (lastID+1));
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
-			while (rs.next()) {
-				lastID = rs.getLong(1);
-				qi.set_id(lastID);
-			}
+			// rs.next(); rs.getLong(1) returns rowid, not `id`
+			qi.set_id(lastID+1);
+			lastID++;
 			rs.close();
 		}
 		con.commit();

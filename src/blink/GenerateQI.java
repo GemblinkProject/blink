@@ -63,18 +63,23 @@ public class GenerateQI {
 	}
 	
     public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, ClassNotFoundException {
+    	// Args: Limit / numThreads / numedges / qiIDPrefix
         int numThreads = 16;
         if (args.length >= 2) {
         	numThreads = Integer.parseInt(args[1]);
         }
         BlinkBuffer blinkBuffer = new BlinkBuffer();
         QICalculator[] threads = new QICalculator[numThreads];
-    
     	
     	int numedges = 0;
     	if (args.length >= 3) {
     		numedges = Integer.parseInt(args[2]);
     	}
+    
+    	long qiIDPrefix = 0;
+    	if (args.length >= 4) {
+        	qiIDPrefix = Integer.parseInt(args[3]);
+        }
     
         BlinkDB db = (BlinkDB) App.getRepositorio();
         long t0 = System.currentTimeMillis();
@@ -89,7 +94,8 @@ public class GenerateQI {
         HashMap<BlinkEntry, QI> _map = new HashMap<BlinkEntry, QI>();
 		int limit = Integer.parseInt(args[0]);
         long blinkIDs[] = db.getBlinkIDsWithoutQI(limit, numedges);
-        int delta = 100;
+        System.out.println("Found "+blinkIDs.length+" blinks without QI");
+        int delta = 3;
         int count = 1;
         int acum = 0;
         for (int k = 0; k < blinkIDs.length; k += delta) {
@@ -137,7 +143,7 @@ public class GenerateQI {
             ArrayList<QI> list = R.getList(); // get list of not persistent QIs
             //t = System.currentTimeMillis();
             
-            db.insertQIs(list);
+            db.insertQIs(list, qiIDPrefix);
             acum = acum+list.size();
             System.out.println(String.format("Inserted %6d new QIs total QIs %6d in %.2f sec.", list.size(), acum, (System.currentTimeMillis() - t0) / 1000.0));
 
