@@ -490,9 +490,18 @@ public class BlinkDB {
 	}
 
 	public long[] getBlinkIDsWithoutQI(int limit) throws SQLException {
+		return getBlinkIDsWithoutQI(limit, 0);
+	}
+	
+	public long[] getBlinkIDsWithoutQI(int limit, int numedges) throws SQLException {
 		Connection con = getConnection();
 		Statement stmt = con.createStatement();
-		ResultSet rs = stmt.executeQuery("select id from blink where qi = -1 limit " + limit);
+		String query = "select id from blink where qi = -1";
+		if (numedges != 0) {
+			query += " and numedges = "+numedges;
+		}
+		query +=  " limit "+limit;
+		ResultSet rs = stmt.executeQuery(query);
 		long[] result = new long[limit];
 		int count = 0;
 		while (rs.next()) {

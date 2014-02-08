@@ -63,13 +63,18 @@ public class GenerateQI {
 	}
 	
     public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, ClassNotFoundException {
-    	
         int numThreads = 16;
         if (args.length >= 2) {
         	numThreads = Integer.parseInt(args[1]);
         }
         BlinkBuffer blinkBuffer = new BlinkBuffer();
         QICalculator[] threads = new QICalculator[numThreads];
+    
+    	
+    	int numedges = 0;
+    	if (args.length >= 3) {
+    		numedges = Integer.parseInt(args[2]);
+    	}
     
         BlinkDB db = (BlinkDB) App.getRepositorio();
         long t0 = System.currentTimeMillis();
@@ -82,8 +87,8 @@ public class GenerateQI {
             R.add(q);
             
         HashMap<BlinkEntry, QI> _map = new HashMap<BlinkEntry, QI>();
-
-        long blinkIDs[] = db.getBlinkIDsWithoutQI(Integer.parseInt(args[0]));
+		int limit = Integer.parseInt(args[0]);
+        long blinkIDs[] = db.getBlinkIDsWithoutQI(limit, numedges);
         int delta = 100;
         int count = 1;
         int acum = 0;
