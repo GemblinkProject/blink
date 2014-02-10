@@ -97,6 +97,9 @@ def java_cli_function(obj, java_gateway=java_gateway):
     '''Return a python function to use a java cli function
     '''
     def function(*args, **kwargs):
+    	java_cli.setCurrentCommand(
+    		readline.get_history_item(readline.get_current_history_length())
+    	)
         params = java_gateway.jvm.java.util.ArrayList()
         for arg in args:
             params.add(arg)
