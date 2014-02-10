@@ -141,7 +141,6 @@ public class BlinkDB {
 			stmt.setLong(2,qi.getHashCode());
 			stmt.setBytes(3, qi.getEntries());
 			stmt.setLong(4, lastID+1);
-			System.out.println((idPrefix << 32) + " insert " + (lastID+1));
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
 			// rs.next(); rs.getLong(1) returns rowid, not `id`
