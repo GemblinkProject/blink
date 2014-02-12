@@ -9,10 +9,21 @@ import java.util.HashSet;
  * color 0.
  */
 public class GemPackedLabelling implements Comparable {
+	static char[] symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+	static int[] values = new int[128];
     private int _n;
     private int[] _code;
     private int _handleNumber;
 
+    static {
+    	for (int i = 0; i < 128; ++i) {
+    		values[i] = -1;
+    	}
+    	for (int i = 0; i < symbols.length; ++i) {
+    		values[symbols[i]] = i;
+    	}
+    }
+    
     public GemPackedLabelling(int[] code, int handleNumber) {
         _code = code;
         _n = 2 * (code.length/3);
@@ -31,29 +42,30 @@ public class GemPackedLabelling implements Comparable {
     }
 
     public GemPackedLabelling(String st, int handleNumber) {
-        int k = st.length()/3;
+        int k = 0;
+        for (int i = 0; i < st.length(); ++i) {
+        	if (values[(int)st.charAt(i)] != -1) ++k;
+        }
+        k /= 3;
+        int capacity = symbols.length, length = 1;
+        while (k > capacity*length) {
+        	capacity *= symbols.length;
+        	length++;
+        }
+        k /= length;
         _code = new int[3*k];
         _n = 2*k;
+        
+        int idx = 0;
 
-        int aValue = (int)'a';
-        int zValue = (int)'z';
-        int AValue = (int)'A';
-
-        for (int i=0;i<k;i++) {
-            int c1 = (int)st.charAt(i);
-            int c2 = (int)st.charAt(k+i);
-            int c3 = (int)st.charAt(k+k+i);
-
-            if (c1 >= AValue)
-                c1 = c1 +1 -1;
-
-            c1 = (c1 >= aValue ? c1-aValue+1 : (zValue-aValue+1)+c1-AValue+1);
-            c2 = (c2 >= aValue ? c2-aValue+1 : (zValue-aValue+1)+c2-AValue+1);
-            c3 = (c3 >= aValue ? c3-aValue+1 : (zValue-aValue+1)+c3-AValue+1);
-
-            _code[i] = c1;
-            _code[k+i] = c2;
-            _code[k+k+i] = c3;
+        for (int i=0;i<3*k;i++) {
+        	int c = 0;
+        	for (int j = 0; j < length; ++j) {
+        		int v = values[(int)st.charAt(idx++)]; 
+        		if (v == -1) --j;
+        		else c = v + c*symbols.length;
+        	}
+        	_code[i] = c+1;
         }
 
         _handleNumber = handleNumber;
@@ -62,22 +74,24 @@ public class GemPackedLabelling implements Comparable {
 
     public String getLettersString(String sep) {
         StringBuffer s = new StringBuffer();
-        int k = 0;
-        for (int i: _code) {
-            if (k % (_n/2) == 0 && k > 0)
+        int capacity = symbols.length, length = 1;
+        while (_n > capacity) {
+        	capacity *= symbols.length;
+        	length++;
+        }
+        char[] word = new char[length];
+        
+        for (int i = 0; i < _code.length; ++i) {
+            if (i % (_n/2) == 0 && i > 0)
                 s.append(sep);
 
-            int index = i-1;
-            int aValue = (int)'a';
-            int zValue = (int)'z';
-            int charValue = aValue+index;
-            if (charValue > zValue) {
-                int AValue = ((int)'A');
-                charValue = AValue + index-(zValue-aValue+1);
+            int x = _code[i] - 1;
+            for (int j = 0; j < length; ++j) {
+            	word[length-j-1] = symbols[x%symbols.length];
+            	x /= symbols.length;
             }
-
-            s.append((char) charValue);
-            k++;
+            
+            s.append(word);
         }
         return s.toString();
     }

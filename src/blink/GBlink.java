@@ -110,7 +110,10 @@ public class GBlink implements Comparable {
             this.setColor(r,BlinkColor.red);
         }
     }
-
+    
+    public String codeAndColors() {
+    	return getMapWord().toString()+" "+Library.intArrayToString(getRedEdgesLabels());
+    }
 
     /**
      * Create g-blink given adjacency code part and colors code part.

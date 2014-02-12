@@ -25,9 +25,8 @@ public class BlinkDrawing {
     private GBlink _gblink;
     private HashMap<GBlinkVertex,ColoredGeneralPath> _mapEdges = new HashMap<GBlinkVertex,ColoredGeneralPath>();
     private HashMap<GBlinkVertex,Point2D.Double> _mapVertices = new HashMap<GBlinkVertex,Point2D.Double>();
-    // private HashMap<
 
-    class ColoredGeneralPath {
+    public class ColoredGeneralPath {
         private GeneralPath _path;
         private Color _color;
         public ColoredGeneralPath(GeneralPath path, Color color) {
@@ -171,6 +170,12 @@ public class BlinkDrawing {
     private double _EPSLineWidth = 1;
     public void setEPSLineWidthInMM(double w) {
         _EPSLineWidth = w * 72.0/25.4;
+    }
+    public HashMap<GBlinkVertex,ColoredGeneralPath> getMapEdges() {
+    	return _mapEdges;
+    }
+    public HashMap<GBlinkVertex,Point2D.Double> getMapVertices() {
+    	return _mapVertices;
     }
 
     public void drawEPS(PrintWriter pw, double x0, double y0, double w, double h, double margin) {
