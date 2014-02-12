@@ -1,0 +1,80 @@
+form.fucntion {
+	
+}
+form.function > * {
+	text-align: left;
+	display: inline;
+	width: 20em;
+}
+form.function > label {
+	text-align: right;
+	display: inline-block;
+	vertical-align: top;
+	width: 10em;
+	font-variant: small-caps;
+	margin-right: 1em;
+}
+form.function > fieldset {
+	position: relative
+}
+form.function > fieldset > spam {
+	position: absolute;
+	top: -2em;
+	left: 1em;
+	background-color: white;
+}
+
+.matrix {
+    position: relative;
+}
+.matrix:before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: 0;
+    border: 1px solid #000;
+    border-right: 0px;
+    width: 6px;
+    height: 100%;
+}
+.matrix:after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 0;
+    border: 1px solid #000;
+    border-left: 0px;
+    width: 6px;
+    height: 100%;
+}
+.matrix td {
+    padding: 5px;    
+    text-align: center;
+}
+
+text {
+	font: 16px sans-serif;
+	pointer-events: none;
+}
+
+text.gem-vertex-lbl {
+	text-anchor: middle;
+	font-weight: bold;
+}
+
+.gem-vertex {
+	cursor: move;
+}
+
+svg {
+	width: 100%;
+	height: 100%;
+}
+
+.just-container {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	margin: 0;
+}
