@@ -2693,6 +2693,9 @@ public class Gem implements Cloneable, Comparable {
 	/**
 	 *
 	 */
+	public Pair findAnyDoubleMeeting(int J) {
+		return findAnyDoubleMeeting(GemColor.getByNumber(J));
+	}
 	public Pair findAnyDoubleMeeting(GemColor J) {
 		GemColor K = GemColor.getByNumber(5 - J.getNumber());
 		ComponentRepository rep = getComponentRepository();
@@ -2701,13 +2704,26 @@ public class Gem implements Cloneable, Comparable {
 		ArrayList<Component> bigons1K = rep.getBigons(GemColor.blue, K);
 		int colorSet23 = GemColor.getColorSet(GemColor.red, GemColor.green);
 		int colorSet0J = GemColor.getColorSet(GemColor.yellow, J);
+		int colorSet0K = GemColor.getColorSet(GemColor.yellow, K);
+		int colorSet1J = GemColor.getColorSet(GemColor.blue, J);
 		int colorSet1K = GemColor.getColorSet(GemColor.blue, K);
+		
+		for (GemVertex u: getVertices()) {
+			System.out.print(u.getLabel()+" ");
+			System.out.print(u.getComponent(colorSet23).getLabel()+" ");
+			System.out.print(u.getComponent(colorSet0J).getLabel()+" ");
+			System.out.print(u.getComponent(colorSet1K).getLabel()+" ");
+			System.out.print(u.getComponent(colorSet0K).getLabel()+" ");
+			System.out.println(u.getComponent(colorSet1J).getLabel()+" ");
+		}
 
 		for (GemVertex u: getVertices()) {
 			for (GemVertex v: getVertices()) {
 				if (u.getComponent(colorSet23) != v.getComponent(colorSet23)
 					&& u.getComponent(colorSet0J) == v.getComponent(colorSet0J)
-					&& u.getComponent(colorSet1K) == v.getComponent(colorSet1K)) {
+					&& u.getComponent(colorSet1K) == v.getComponent(colorSet1K)
+					&& u.getComponent(colorSet0K) != v.getComponent(colorSet0K)
+					&& u.getComponent(colorSet1J) != v.getComponent(colorSet1J)) {
 					return new Pair(u, v);
 				}
 			}
@@ -2801,79 +2817,87 @@ public class Gem implements Cloneable, Comparable {
 			v11 = newVertex(getNumVertices()+1);
 		}
 		
-		AJ.setNeighbour(v8, J);
-		v8.setNeighbour(AJ, J);
-		A1.setNeighbour(v8, c1);
-		v8.setNeighbour(A1, c1);
+		AJ.setNeighbour(v10, J);
+		v10.setNeighbour(AJ, J);
+		A1.setNeighbour(v10, c1);
+		v10.setNeighbour(A1, c1);
 		A0.setNeighbour(v, c0);
 		v.setNeighbour(A0, c0);
 		AK.setNeighbour(v, K);
 		v.setNeighbour(AK, K);
 		
-		v8.setNeighbour(v5, K);
-		v5.setNeighbour(v8, K);
-		v8.setNeighbour(v7, c0);
-		v7.setNeighbour(v8, c0);
-		v.setNeighbour(v5, c1);
-		v5.setNeighbour(v, c1);
-		v.setNeighbour(v7, J);
-		v7.setNeighbour(v, J);
+		v10.setNeighbour(v7, K);
+		v7.setNeighbour(v10, K);
+		v10.setNeighbour(v9, c0);
+		v9.setNeighbour(v10, c0);
+		v.setNeighbour(v7, c1);
+		v7.setNeighbour(v, c1);
+		v.setNeighbour(v9, J);
+		v9.setNeighbour(v, J);
 		
-		v5.setNeighbour(v6, J);
-		v6.setNeighbour(v5, J);
+		v7.setNeighbour(v8, J);
+		v8.setNeighbour(v7, J);
+		v7.setNeighbour(v8, c0);
+		v8.setNeighbour(v7, c0);
+		v9.setNeighbour(v4, c1);
+		v4.setNeighbour(v9, c1);
+		v9.setNeighbour(v4, K);
+		v4.setNeighbour(v9, K);
+		
+		v8.setNeighbour(v3, K);
+		v3.setNeighbour(v8, K);
+		v8.setNeighbour(v3, c1);
+		v3.setNeighbour(v8, c1);
+		v4.setNeighbour(v3, c0);
+		v3.setNeighbour(v4, c0);
+		v4.setNeighbour(v3, J);
+		v3.setNeighbour(v4, J);
+		
 		v5.setNeighbour(v6, c0);
 		v6.setNeighbour(v5, c0);
-		v7.setNeighbour(v2, c1);
-		v2.setNeighbour(v7, c1);
-		v7.setNeighbour(v2, K);
-		v2.setNeighbour(v7, K);
+		v5.setNeighbour(v6, J);
+		v6.setNeighbour(v5, J);
+		v5.setNeighbour(v12, c1);
+		v12.setNeighbour(v5, c1);
+		v5.setNeighbour(v12, K);
+		v12.setNeighbour(v5, K);
 		
-		v6.setNeighbour(v1, K);
-		v1.setNeighbour(v6, K);
 		v6.setNeighbour(v1, c1);
 		v1.setNeighbour(v6, c1);
-		v2.setNeighbour(v1, c0);
-		v1.setNeighbour(v2, c0);
-		v2.setNeighbour(v1, J);
-		v1.setNeighbour(v2, J);
-		
-		v3.setNeighbour(v4, c0);
-		v4.setNeighbour(v3, c0);
-		v3.setNeighbour(v4, J);
-		v4.setNeighbour(v3, J);
-		v3.setNeighbour(v12, c1);
-		v12.setNeighbour(v3, c1);
-		v3.setNeighbour(v12, K);
-		v12.setNeighbour(v3, K);
-		
-		v4.setNeighbour(v9, c1);
-		v9.setNeighbour(v4, c1);
-		v4.setNeighbour(v9, K);
-		v9.setNeighbour(v4, K);
+		v6.setNeighbour(v1, K);
+		v1.setNeighbour(v6, K);
 		v12.setNeighbour(v11, c0);
 		v11.setNeighbour(v12, c0);
 		v12.setNeighbour(v11, J);
 		v11.setNeighbour(v12, J);
 		
-		v9.setNeighbour(u, J);
-		u.setNeighbour(v9, J);
-		v9.setNeighbour(v10, c0);
-		v10.setNeighbour(v9, c0);
+		v1.setNeighbour(u, J);
+		u.setNeighbour(v1, J);
+		v1.setNeighbour(v2, c0);
+		v2.setNeighbour(v1, c0);
 		v11.setNeighbour(u, c1);
 		u.setNeighbour(v11, c1);
-		v11.setNeighbour(v10, K);
-		v10.setNeighbour(v11, K);
+		v11.setNeighbour(v2, K);
+		v2.setNeighbour(v11, K);
 		
 		u.setNeighbour(BK, K);
 		BK.setNeighbour(u, K);
 		u.setNeighbour(B0, c0);
 		B0.setNeighbour(u, c0);
-		v10.setNeighbour(B1, c1);
-		B1.setNeighbour(v10, c1);
-		v10.setNeighbour(BJ, J);
-		BJ.setNeighbour(v10, J);
+		v2.setNeighbour(B1, c1);
+		B1.setNeighbour(v2, c1);
+		v2.setNeighbour(BJ, J);
+		BJ.setNeighbour(v2, J);
 		
-		return new Pair(v1, v3);
+		for (int i = 0; i < _vertices.size(); ++i) {
+			System.out.print(_vertices.get(i).getLabel() + ": ");
+			for (int j = 0; j < 4; ++j) {
+				System.out.print(_vertices.get(i).getNeighbour(GemColor.getByNumber(j)).getLabel() + ", ");
+			}
+			System.out.println("");
+		}
+		
+		return new Pair(v3, v5);
 	}
 	
 	public GemVertex getVertexByLabel(int lbl) {
