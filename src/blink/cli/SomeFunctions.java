@@ -184,6 +184,15 @@ class FunctionGem extends Function {
                     0).getGem();
             return gem;
         }
+        else if (params.size() == 3) {
+            // get gem from space in U (classID = 1: pontentially prime)
+        	int classID = ((Number) params.get(0)).intValue();
+        	int numEdges = ((Number) params.get(1)).intValue();
+        	int numOrder = ((Number) params.get(2)).intValue();
+            long gemID = App.getRepositorio().getGemIDFromClass(classID, numEdges, numOrder);
+            if (gemID == 0) throw new EvaluationException("space doesn't exists");
+            return App.getRepositorio().getGemById(gemID).getGem();
+        }
         else if (params.size() == 4) {
             Gem gem = new Gem(
                     ((Number) params.get(0)).intValue(),

@@ -2690,6 +2690,205 @@ public class Gem implements Cloneable, Comparable {
         return result;
     }
 
+	/**
+	 *
+	 */
+	public Pair findAnyDoubleMeeting(GemColor J) {
+		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		ComponentRepository rep = getComponentRepository();
+		ArrayList<Component> bigons23 = rep.getBigons(GemColor.red, GemColor.green);
+		ArrayList<Component> bigons0J = rep.getBigons(GemColor.yellow, J);
+		ArrayList<Component> bigons1K = rep.getBigons(GemColor.blue, K);
+		int colorSet23 = GemColor.getColorSet(GemColor.red, GemColor.green);
+		int colorSet0J = GemColor.getColorSet(GemColor.yellow, J);
+		int colorSet1K = GemColor.getColorSet(GemColor.blue, K);
+
+		for (GemVertex u: getVertices()) {
+			for (GemVertex v: getVertices()) {
+				if (u.getComponent(colorSet23) != v.getComponent(colorSet23)
+					&& u.getComponent(colorSet0J) == v.getComponent(colorSet0J)
+					&& u.getComponent(colorSet1K) == v.getComponent(colorSet1K)) {
+					return new Pair(u, v);
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Pair fixPairDifferentParity(Pair uv, GemColor J) {
+		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		GemColor c0 = GemColor.yellow;
+		GemColor c1 = GemColor.blue;
+		GemVertex u = (GemVertex)uv.getFirst();
+		GemVertex v = (GemVertex)uv.getSecond();
+		if (u.getLabel()%2 == v.getLabel()%2) return uv;
+		if (u.getLabel()%2 == 1) {
+			GemVertex tmp = u;
+			u = v;
+			v = tmp;
+		}
+		GemVertex A1 = u.getNeighbour(c1);
+		GemVertex AJ = u.getNeighbour(J);
+		// v and w odd
+		GemVertex w = newVertex(getNumVertices()+1);
+		GemVertex z = newVertex(getNumVertices()+1);
+		u.setNeighbour(w, c1);
+		u.setNeighbour(w, J);
+		
+		w.setNeighbour(z, c0);
+		w.setNeighbour(z, K);
+		w.setNeighbour(u, c1);
+		w.setNeighbour(u, J);
+		
+		z.setNeighbour(A1, c1);
+		z.setNeighbour(AJ, J);
+		z.setNeighbour(w, c0);
+		z.setNeighbour(w, K);
+		
+		A1.setNeighbour(z, c1);
+		AJ.setNeighbour(z, J);
+		return new Pair(v, w);
+	}
+	
+	public Pair makeLocalizedAlmostTwisting(Pair uv, int J) {
+		return makeLocalizedAlmostTwisting(uv, GemColor.getByNumber(J));
+	}
+	
+	public Pair makeLocalizedAlmostTwisting(Pair uv, GemColor J) {
+		uv = fixPairDifferentParity(uv, J);
+		GemColor K = GemColor.getByNumber(5 - J.getNumber());
+		GemColor c0 = GemColor.yellow;
+		GemColor c1 = GemColor.blue;
+		GemVertex u = (GemVertex)uv.getFirst();
+		GemVertex v = (GemVertex)uv.getSecond();
+		
+		GemVertex AJ = u.getNeighbour(J);
+		GemVertex A1 = u.getNeighbour(c1);
+		GemVertex A0 = v.getNeighbour(c0);
+		GemVertex AK = v.getNeighbour(K);
+		
+		GemVertex BK = u.getNeighbour(K);
+		GemVertex B0 = u.getNeighbour(c0);
+		GemVertex B1 = v.getNeighbour(c1);
+		GemVertex BJ = v.getNeighbour(J);
+		
+		GemVertex v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12;
+		if (u.getLabel()%2 == 0) {
+			v1 = newVertex(getNumVertices()+1);
+			v2 = newVertex(getNumVertices()+1);
+			v3 = newVertex(getNumVertices()+1);
+			v4 = newVertex(getNumVertices()+1);
+			v5 = newVertex(getNumVertices()+1);
+			v6 = newVertex(getNumVertices()+1);
+			v7 = newVertex(getNumVertices()+1);
+			v8 = newVertex(getNumVertices()+1);
+			v9 = newVertex(getNumVertices()+1);
+			v10 = newVertex(getNumVertices()+1);
+			v11 = newVertex(getNumVertices()+1);
+			v12 = newVertex(getNumVertices()+1);
+		} else {
+			v2 = newVertex(getNumVertices()+1);
+			v1 = newVertex(getNumVertices()+1);
+			v4 = newVertex(getNumVertices()+1);
+			v3 = newVertex(getNumVertices()+1);
+			v6 = newVertex(getNumVertices()+1);
+			v5 = newVertex(getNumVertices()+1);
+			v8 = newVertex(getNumVertices()+1);
+			v7 = newVertex(getNumVertices()+1);
+			v10 = newVertex(getNumVertices()+1);
+			v9 = newVertex(getNumVertices()+1);
+			v12 = newVertex(getNumVertices()+1);
+			v11 = newVertex(getNumVertices()+1);
+		}
+		
+		AJ.setNeighbour(v8, J);
+		v8.setNeighbour(AJ, J);
+		A1.setNeighbour(v8, c1);
+		v8.setNeighbour(A1, c1);
+		A0.setNeighbour(v, c0);
+		v.setNeighbour(A0, c0);
+		AK.setNeighbour(v, K);
+		v.setNeighbour(AK, K);
+		
+		v8.setNeighbour(v5, K);
+		v5.setNeighbour(v8, K);
+		v8.setNeighbour(v7, c0);
+		v7.setNeighbour(v8, c0);
+		v.setNeighbour(v5, c1);
+		v5.setNeighbour(v, c1);
+		v.setNeighbour(v7, J);
+		v7.setNeighbour(v, J);
+		
+		v5.setNeighbour(v6, J);
+		v6.setNeighbour(v5, J);
+		v5.setNeighbour(v6, c0);
+		v6.setNeighbour(v5, c0);
+		v7.setNeighbour(v2, c1);
+		v2.setNeighbour(v7, c1);
+		v7.setNeighbour(v2, K);
+		v2.setNeighbour(v7, K);
+		
+		v6.setNeighbour(v1, K);
+		v1.setNeighbour(v6, K);
+		v6.setNeighbour(v1, c1);
+		v1.setNeighbour(v6, c1);
+		v2.setNeighbour(v1, c0);
+		v1.setNeighbour(v2, c0);
+		v2.setNeighbour(v1, J);
+		v1.setNeighbour(v2, J);
+		
+		v3.setNeighbour(v4, c0);
+		v4.setNeighbour(v3, c0);
+		v3.setNeighbour(v4, J);
+		v4.setNeighbour(v3, J);
+		v3.setNeighbour(v12, c1);
+		v12.setNeighbour(v3, c1);
+		v3.setNeighbour(v12, K);
+		v12.setNeighbour(v3, K);
+		
+		v4.setNeighbour(v9, c1);
+		v9.setNeighbour(v4, c1);
+		v4.setNeighbour(v9, K);
+		v9.setNeighbour(v4, K);
+		v12.setNeighbour(v11, c0);
+		v11.setNeighbour(v12, c0);
+		v12.setNeighbour(v11, J);
+		v11.setNeighbour(v12, J);
+		
+		v9.setNeighbour(u, J);
+		u.setNeighbour(v9, J);
+		v9.setNeighbour(v10, c0);
+		v10.setNeighbour(v9, c0);
+		v11.setNeighbour(u, c1);
+		u.setNeighbour(v11, c1);
+		v11.setNeighbour(v10, K);
+		v10.setNeighbour(v11, K);
+		
+		u.setNeighbour(BK, K);
+		BK.setNeighbour(u, K);
+		u.setNeighbour(B0, c0);
+		B0.setNeighbour(u, c0);
+		v10.setNeighbour(B1, c1);
+		B1.setNeighbour(v10, c1);
+		v10.setNeighbour(BJ, J);
+		BJ.setNeighbour(v10, J);
+		
+		return new Pair(v1, v3);
+	}
+	
+	public GemVertex getVertexByLabel(int lbl) {
+		if (_vertices.get(lbl-1).getLabel() == lbl) {
+			return _vertices.get(lbl-1);
+		}
+		for (GemVertex v: _vertices) {
+			if (v.getLabel() == lbl) return v;
+		}
+		return null;
+	}
+	public Pair getPairByLabel(int l1, int l2) {
+		return new Pair(getVertexByLabel(l1), getVertexByLabel(l2));
+	}
+
     /**
      * Tags the components of the graph with all possible combinations
      * then searches for the first dipole

@@ -193,6 +193,10 @@ public class CommandLineInterface {
             _console.write(ex.getMessage());
         }
     }
+    
+    public void setCurrentCommand(String str) {
+    	_currentCommand = str;
+    }
 
     public void execute(Node script) {
         try {

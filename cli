@@ -97,6 +97,9 @@ def java_cli_function(obj, java_gateway=java_gateway):
     '''Return a python function to use a java cli function
     '''
     def function(*args, **kwargs):
+    	java_cli.setCurrentCommand(
+    		readline.get_history_item(readline.get_current_history_length())
+    	)
         params = java_gateway.jvm.java.util.ArrayList()
         for arg in args:
             params.add(arg)
@@ -111,12 +114,25 @@ reserved_words = dir(__builtins__) + keyword.kwlist
 
 ## FIXME
 
-def bbgems(n_v, idx_s, idx_f, filename, use_only_first_perm = False):
+def bsUNIVs(n_v, idx_s, idx_f, filename=None, use_only_first_perm=False):
     """Shortcut for bigons_and_bainhas([gem(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s)"""
-    return bigons_and_bainhas([gem_(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s, use_only_first_perm)
-	
+    return bigons_and_bainhas(
+        [gem_(n_v, x) for x in range(idx_s, idx_f+1)],
+        filename,
+        'Gem %d',
+        idx_s,
+        use_only_first_perm)
 
-def bigons_and_bainhas(gems, filename = None, idx_start = 1, use_only_first_perm = False):
+def bsFromSpace(n_e, idx_s, idx_f, filename=None, use_only_first_perm = False):
+    """Shortcut for bigons_and_bainhas([gem(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s)"""
+    return bigons_and_bainhas(
+        [gem_(1,n_e, x) for x in range(idx_s, idx_f+1)],
+        filename,
+        'Minimum gem for space '+str(n_e)+'<sub>%d</sub>',
+        idx_s,
+        use_only_first_perm)
+
+def bigons_and_bainhas(gems, filename=None, title='<h3>Gem %d</h3>', idx_start=1, use_only_first_perm = False):
     """Create html with info about bingos and bainhas for all gems (parameter)
     Insert a page break after each gem information"""
     
@@ -127,7 +143,7 @@ def bigons_and_bainhas(gems, filename = None, idx_start = 1, use_only_first_perm
             ret += '<p style="page-break-after:avoid">'
         else:
             ret += '<p style="page-break-after:always">'
-        ret += '<h3>Gem '+str(idx_start)+' with '+str(g.getNumVertices())+' vertices</h3>'
+        ret += '<h3>'+(title%idx_start)+' with '+str(g.getNumVertices())+' vertices</h3>'
         idx_start += 1
         count += 1
         if use_only_first_perm:
@@ -151,7 +167,8 @@ functions = {
     'flush_stderr': flush_stderr,
     'flush_stdout': flush_stdout,
     'bigons_and_bainhas': bigons_and_bainhas,
-    'bbgems': bbgems
+    'bsUNIVs': bsUNIVs,
+    'bsFromSpace': bsFromSpace
 }
 
 try:

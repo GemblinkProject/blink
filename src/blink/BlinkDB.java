@@ -111,22 +111,41 @@ public class BlinkDB {
 		stmt.close();
 	}
 
-
+	public long getLastQIID(long idPrefix) throws SQLException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("select max(id) from qi where id < "+ (idPrefix+1 << 32));
+		long result = 0;
+		if (rs.next()) {
+			result = rs.getLong(1);
+		}
+		rs.close();
+		stmt.close();
+		return result;
+	}
+	
 	public void insertQIs(ArrayList<QI> qis) throws SQLException, IOException {
+		insertQIs(qis, 0);
+	}
+	
+	public void insertQIs(ArrayList<QI> qis, long idPrefix) throws SQLException, IOException {
 		if (qis.size() == 0)
 			return;
+		long lastID = getLastQIID(idPrefix);
+		lastID = Math.max(lastID, idPrefix << 32);
 		Connection con = getConnection();
 		con.setAutoCommit(false);
-		PreparedStatement stmt = con.prepareStatement("insert into qi (rmax, hashcode, dados) values (?,?,?)");
+		PreparedStatement stmt = con.prepareStatement("insert into qi (rmax, hashcode, dados, id) values (?,?,?,?)");
 		for (QI qi: qis) {
 			stmt.setInt(1,qi.get_rmax());
 			stmt.setLong(2,qi.getHashCode());
 			stmt.setBytes(3, qi.getEntries());
+			stmt.setLong(4, lastID+1);
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
-			if (rs.next()) {
-				qi.set_id(rs.getLong(1));
-			}
+			// rs.next(); rs.getLong(1) returns rowid, not `id`
+			qi.set_id(lastID+1);
+			lastID++;
 			rs.close();
 		}
 		con.commit();
@@ -323,6 +342,33 @@ public class BlinkDB {
 		stmt.close();
 		return result;
 	}
+	
+	public ArrayList<BlinkEntry> getBlinksByIDsArray(long[] ids) throws SQLException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		
+		String idsString = ""+ids[0];
+		for (int i = 1; i < ids.length; ++i) idsString += ","+ids[i];
+		
+		ResultSet rs = stmt.executeQuery("select id,mapcode,colors,numedges,hg,qi,comment,gem,mingem,catalogNumber from blink where id in ("+idsString+")");
+		ArrayList<BlinkEntry> result = new ArrayList<BlinkEntry>();
+		while (rs.next()) {
+			long id = rs.getInt(1);
+			String mapCode = rs.getString(2);
+			long colors = rs.getLong(3);
+			int numEdges = rs.getInt(4);
+			String hg = rs.getString(5);
+			long qi = rs.getLong(6);
+			String comment = rs.getString(7);
+			long gem = rs.getLong(8);
+			long mingem = rs.getLong(9);
+			int catalogNumber = rs.getInt(10);
+			result.add(new BlinkEntry(id,mapCode,colors,numEdges,hg,qi,gem,mingem,comment,catalogNumber));
+		}
+		rs.close();
+		stmt.close();
+		return result;
+	}
 
 
 	public ArrayList<BlinkEntry> getBlinksWithoutGemAndWithNumEdges(int numEdges) throws SQLException {
@@ -447,6 +493,33 @@ public class BlinkDB {
 		return result;
 	}
 
+	public long[] getBlinkIDsWithoutQI(int limit) throws SQLException {
+		return getBlinkIDsWithoutQI(limit, 0);
+	}
+	
+	public long[] getBlinkIDsWithoutQI(int limit, int numedges) throws SQLException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		String query = "select id from blink where qi = -1";
+		if (numedges != 0) {
+			query += " and numedges = "+numedges;
+		}
+		query +=  " limit "+limit;
+		ResultSet rs = stmt.executeQuery(query);
+		long[] result = new long[limit];
+		int count = 0;
+		while (rs.next()) {
+			result[count++]=rs.getLong(1);
+		}
+		if (count < limit) {
+			long tmp[] = new long[count];
+			for (int i = 0 ; i < count; ++i) tmp[i] = result[i];
+			result = tmp;
+		}
+		rs.close();
+		stmt.close();
+		return result;
+	}
 
 	public long[] getMinMaxBlinkIDs() throws SQLException {
 		Connection con = getConnection();
@@ -1168,6 +1241,19 @@ public class BlinkDB {
 		rs.close();
 		stmt.close();
 		return result;
+	}
+	
+	/**
+	 * Get gem from class
+	 */
+	public long getGemIDFromClass(int id, int numedges, int numorder) throws SQLException, IOException,
+	ClassNotFoundException {
+		Connection con = getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("select gem from class where id="+id+" and numedges="+numedges+" and numorder="+numorder);
+		if (rs.next()) {
+    		return rs.getLong(1);
+    	} else return 0;
 	}
 
 	/**
