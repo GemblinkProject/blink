@@ -4343,7 +4343,7 @@ public class Gem implements Cloneable, Comparable {
      * @param gem Gem
      * @return boolean
      */
-    public boolean simplifyDipolesAndRhoPairs() {
+    public boolean simplifyDipolesAndRhoPairs(boolean keepHandles) {
 
         boolean simplified = false;
 
@@ -4371,23 +4371,6 @@ public class Gem implements Cloneable, Comparable {
                 throw new RuntimeException("Oooopsss");
             }
 
-            // find any rho 3 pair
-            RhoPair r3 = this.findAnyRho3Pair();
-            if (r3 != null) {
-                System.out.println("<SIMPLIFICATION> Found " + r3.toString() + ". Applying it...");
-
-                // alter gem (but keep the field originalLabel
-                // of the vertices intact) by removing the
-                // dipole d from it.
-                this.applyRhoPair(r3);
-
-                // found rho move
-                foundRhoMove = true;
-
-                // the next iteration should find a dipole
-                continue;
-            }
-
             // find any rho 2 pair
             RhoPair r2 = this.findAnyRho2Pair();
             if (r2 != null) {
@@ -4405,6 +4388,25 @@ public class Gem implements Cloneable, Comparable {
                 continue;
             }
 
+            // find any rho 3 pair
+            if (!keepHandles) {
+		        RhoPair r3 = this.findAnyRho3Pair();
+		        if (r3 != null) {
+		            System.out.println("<SIMPLIFICATION> Found " + r3.toString() + ". Applying it...");
+
+		            // alter gem (but keep the field originalLabel
+		            // of the vertices intact) by removing the
+		            // dipole d from it.
+		            this.applyRhoPair(r3);
+
+		            // found rho move
+		            foundRhoMove = true;
+
+		            // the next iteration should find a dipole
+		            continue;
+		        }
+		    }
+            
             // no rho and no dipole cancelation!
             break;
         }
@@ -4419,12 +4421,15 @@ public class Gem implements Cloneable, Comparable {
      * using TS1, TS2, TS3 and TS4.
      */
     public Gem getVersionWithoutFourClusters() {
+    	return getVersionWithoutFourClusters(false);
+    }
+    public Gem getVersionWithoutFourClusters(boolean keepHandles) {
         Gem g = this.copy();
 
 
         TSMoveType types[] = {TSMoveType.TS1,TSMoveType.TS2,TSMoveType.TS3,TSMoveType.TS4};
 
-        g.simplifyDipolesAndRhoPairs();
+        g.simplifyDipolesAndRhoPairs(keepHandles);
 
         // the famous go to!!!
         findSimplifyingTSMove:
@@ -4441,7 +4446,7 @@ public class Gem implements Cloneable, Comparable {
                         System.out.println(""+copy.getCurrentLabelling().getLettersString(""));
 
                         System.out.println("Trying Move "+m);
-                        if (copy.simplifyDipolesAndRhoPairs()) {
+                        if (copy.simplifyDipolesAndRhoPairs(keepHandles)) {
 
                             g = copy;
                             break findSimplifyingTSMove;
@@ -4463,6 +4468,21 @@ public class Gem implements Cloneable, Comparable {
             v.setNeighbour(v.getNeighbour(c2), c1);
             v.setNeighbour(tmp, c2);
         }
+    }
+    
+    public void permutColors(GemColor[] p) {
+    	GemVertex[] tmp = new GemVertex[4];
+        for (GemVertex v: _vertices) {
+            for (int i = 0; i < 4; ++i) {
+            	tmp[i] = v.getNeighbour(GemColor.getByNumber(i));
+            }
+            for (int i = 0; i < 4; ++i) {
+            	v.setNeighbour(tmp[p[i].getNumber()], GemColor.getByNumber(i));
+            }
+        }
+    }
+    public void permutColors(int perm) {
+    	permutColors(GemColor.PERMUTATIONS[perm]);
     }
     
     public String getNumCode() {
@@ -5638,8 +5658,6 @@ class ComponentRepository {
         return sb.toString();
     }
 }
-
-
 
 class Component {
     Gem _gem;

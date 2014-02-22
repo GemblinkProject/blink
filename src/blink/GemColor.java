@@ -40,19 +40,19 @@ public enum GemColor {
                                                      {GemColor.blue,GemColor.green,GemColor.yellow,GemColor.red},
                                                      {GemColor.blue,GemColor.green,GemColor.red,GemColor.yellow},
 
-                                                     {GemColor.red,GemColor.blue,GemColor.yellow,GemColor.green},
-                                                     {GemColor.red,GemColor.blue,GemColor.green,GemColor.yellow},
                                                      {GemColor.red,GemColor.yellow,GemColor.blue,GemColor.green},
                                                      {GemColor.red,GemColor.yellow,GemColor.green,GemColor.blue},
-                                                     {GemColor.red,GemColor.green,GemColor.blue,GemColor.yellow},
+                                                     {GemColor.red,GemColor.blue,GemColor.yellow,GemColor.green},
+                                                     {GemColor.red,GemColor.blue,GemColor.green,GemColor.yellow},
                                                      {GemColor.red,GemColor.green,GemColor.yellow,GemColor.blue},
+                                                     {GemColor.red,GemColor.green,GemColor.blue,GemColor.yellow},
 
-                                                     {GemColor.green,GemColor.blue,GemColor.red,GemColor.yellow},
-                                                     {GemColor.green,GemColor.blue,GemColor.yellow,GemColor.red},
-                                                     {GemColor.green,GemColor.red,GemColor.blue,GemColor.yellow},
-                                                     {GemColor.green,GemColor.red,GemColor.yellow,GemColor.blue},
                                                      {GemColor.green,GemColor.yellow,GemColor.blue,GemColor.red},
-                                                     {GemColor.green,GemColor.yellow,GemColor.red,GemColor.blue}};
+                                                     {GemColor.green,GemColor.yellow,GemColor.red,GemColor.blue},
+                                                     {GemColor.green,GemColor.blue,GemColor.yellow,GemColor.red},
+                                                     {GemColor.green,GemColor.blue,GemColor.red,GemColor.yellow},
+                                                     {GemColor.green,GemColor.red,GemColor.yellow,GemColor.blue},
+                                                     {GemColor.green,GemColor.red,GemColor.blue,GemColor.yellow}};
 
 
 

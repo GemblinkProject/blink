@@ -143,7 +143,8 @@ public class CommandLineInterface {
                              new FunctionClone(),
                              new FunctionBettiNumber(),
                              new FunctionBigons(),
-                             new FunctionBainhas()
+                             new FunctionBainhas(),
+                             new FunctionDeepness()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);

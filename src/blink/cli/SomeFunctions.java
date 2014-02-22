@@ -33,6 +33,7 @@ import linsoft.graph.PlanarRepresentation;
 import linsoft.netsimplex.Network;
 
 import org.jscience.mathematics.numbers.Complex;
+import edu.uci.ics.jung.utils.Pair;
 
 import blink.App;
 import blink.BlinkDrawing;
@@ -2819,7 +2820,11 @@ class FunctionGemWithoutFourCluster extends Function {
         }
         else
             gem = (Gem) params.get(0);
-        return gem.getVersionWithoutFourClusters();
+        boolean keepHandles = false;
+        if (params.size() >= 2 && params.get(1) instanceof Number) {
+        	keepHandles = ((Integer)params.get(1)) == 1;
+        }
+        return gem.getVersionWithoutFourClusters(keepHandles);
     }
 }
 
@@ -5310,6 +5315,69 @@ class FunctionBainhas extends Function {
             	}
             	return ret;
            	}
+        } else {
+            throw new EvaluationException("Must receive a gem");
+        }
+    }
+}
+
+class FunctionDeepness extends Function {
+    public FunctionDeepness() {
+        super("deepness", "Get the deepness (number of trees of 23-gons connected by double meeting)");
+    }
+    
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+    
+    private Object hardwork(ArrayList<Object> params, DataMap localData) throws EvaluationException, Exception {
+        if (params.get(0) instanceof Gem) {
+            Gem g = (Gem) params.get(0);
+            g = g.copy();
+            
+            if (params.size() >= 2 && params.get(1) instanceof Number) {
+            	g.permutColors((Integer)params.get(1));
+            }
+            if (params.size() >= 2 && params.get(1) instanceof String) {
+            	GemColor[] c = new GemColor[4];
+            	String s = (String) params.get(1);
+            	for (int i = 0; i < 4; ++i) {
+            		c[i] = GemColor.getByNumber((int)s.charAt(i)-'0');
+            	}
+            	g.permutColors(c);
+            }
+            
+            while (true) {
+		        Pair p = g.findAnyDoubleMeeting(2);
+				if (p != null) {
+					g.makeLocalizedAlmostTwisting(p, 2);
+					g = g.copy();
+					continue;
+				}
+				p = g.findAnyDoubleMeeting(3);
+				if (p != null) {
+					g.makeLocalizedAlmostTwisting(p, 3);
+					g = g.copy();
+					continue;
+				}
+				break;
+            }
+            HashSet<Integer> components = new HashSet<Integer>();
+            int c23 = GemColor.getColorSet(GemColor.green, GemColor.red);
+            for (GemVertex v: g.getVertices()) {
+            	components.add(new Integer(v.getComponentLabel(c23)));
+            }
+            return new Integer(components.size());
         } else {
             throw new EvaluationException("Must receive a gem");
         }

@@ -166,6 +166,12 @@ public class GemVertex implements Comparable, Cloneable {
             return null;
         else return _component[component];
     }
+    public int getComponentLabel(int component) {
+        if (_component == null)
+            return -1;
+        else return _component[component].getLabel();
+    }
+    
     public void setComponent(int index, Component c) {
         if (_component == null) _component = new Component[16];
         _component[index] = c;
