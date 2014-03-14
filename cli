@@ -155,7 +155,30 @@ def bigons_and_bainhas(gems, filename=None, title='<h3>Gem %d</h3>', idx_start=1
                 ret += bainhas_(g, i).replace("\n", '<br />')
         ret += "</p>\n"
     if filename:
-        f = open(filename, "w"	)
+        f = open(filename, "w")
+        f.write(ret)
+        f.close()
+    else:
+        return ret
+
+def bigonsAndSheaths(gem, name=None, permutation=-1):
+    if name is None:
+        title = 'Gem with '+str(gem.getNumVertices())+' vertices'
+    else:
+        title = name
+    ret = ""
+    ret += '<p>'
+    ret += '<h3>'+title+'</h3>'
+    if permutation != -1:
+        ret += bigons_(gem, permutation).replace("\n", '<br />')
+        ret += bainhas_(gem, permutation).replace("\n", '<br />')
+    else:
+        for i in range(4):
+            ret += bigons_(gem, i).replace("\n", '<br />')
+            ret += bainhas_(gem, i).replace("\n", '<br />')
+    ret += "</p>\n"
+    if name:
+        f = open(name+'.html', "w")
         f.write(ret)
         f.close()
     else:
@@ -203,6 +226,7 @@ functions = {
     'flush_stderr': flush_stderr,
     'flush_stdout': flush_stdout,
     'bigons_and_bainhas': bigons_and_bainhas,
+    'bigonsAndSheaths': bigonsAndSheaths,
     'bsUNIVs': bsUNIVs,
     'bsFromSpace': bsFromSpace,
     'tryMakeSphere': tryMakeSphere,
