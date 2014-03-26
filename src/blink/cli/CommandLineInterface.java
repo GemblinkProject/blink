@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import java.awt.GraphicsEnvironment;
 
 public class CommandLineInterface {
     public static final CommandLineInterface _singleton = new CommandLineInterface();
@@ -22,7 +23,9 @@ public class CommandLineInterface {
     public String _currentCommand;
 
     private CommandLineInterface() {
-        _console = new Console();
+        if (!GraphicsEnvironment.isHeadless()) {
+        	_console = new Console();
+        }
         _dataMap = new DataMap();
         _functionMap = new FunctionMap();
 
@@ -176,6 +179,7 @@ public class CommandLineInterface {
 
     public void outputGraphics(JComponent c) {
         // _console.write(text);
+
     }
 
     /**
@@ -328,6 +332,10 @@ public class CommandLineInterface {
 
     public static void main(String[] args) {
         CommandLineInterface cli = CommandLineInterface.getInstance();
+        if (GraphicsEnvironment.isHeadless()) {
+        	System.err.println("There is no graphical interface to run");
+        	System.exit(0);
+        }
         Console c = cli.getConsole();
         linsoft.gui.util.Library.resizeAndCenterWindow(c,800,600);
         c.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

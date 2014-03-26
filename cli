@@ -124,7 +124,7 @@ def bsUNIVs(n_v, idx_s, idx_f, filename=None, use_only_first_perm=False):
         use_only_first_perm)
 
 def bsFromSpace(n_e, idx_s, idx_f, filename=None, use_only_first_perm = False):
-    """Shortcut for bigons_and_bainhas([gem(n_v, x) for x in range(idx_s, idx_f+1)], filename, idx_s)"""
+    """Shortcut for bigons_and_bainhas([gem(1, n_e, x) for x in range(idx_s, idx_f+1)], filename, idx_s)"""
     return bigons_and_bainhas(
         [gem_(1,n_e, x) for x in range(idx_s, idx_f+1)],
         filename,
@@ -161,7 +161,7 @@ def bigons_and_bainhas(gems, filename=None, title='<h3>Gem %d</h3>', idx_start=1
     else:
         return ret
 
-def tryMakeSphere(g0, needSwap):
+def tryMakeSphere(g0, needSwap=None):
 	perms = [[], [(0,2)], [(0,3)], [(1,2)], [(1,3)], [(0,2), (1,3)]]
 	for perm in perms:
 		g = clone_(g0)
@@ -185,7 +185,7 @@ def tryMakeSphere(g0, needSwap):
 		if code == '2,2,2,2,1,1,1,1':
 			return g
 		print '+'
-		if needSwap:
+		if needSwap is not None:
 			needSwap.append(g0)
 	print 'Ops!'
 	return g
@@ -196,6 +196,7 @@ def searchForNeedSwapingToMakeSphere(l):
 		print '.',
 		sys.stdout.flush()
 		tryMakeSphere(g, ret)
+	print
 	return ret
 ##
 

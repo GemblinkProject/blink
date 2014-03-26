@@ -65,6 +65,28 @@ case class ExpectedError(error: String) extends Exception {
   override def toString = error
 }
 
+abstract class FunctionBridgeCLI[P: Reads, R: Writes] extends FunctionBridge[P, R] {
+  def function: blink.cli.Function
+  def localDataNames: Map[Int, String] = Map()
+  
+  def apply(x: Parameters): Return = {
+    val params = new java.util.ArrayList[Object]
+    val localData = new blink.cli.DataMap
+    if (x.isInstanceOf[Product]) {
+      val args = x.asInstanceOf[Product]
+      val localNames = localDataNames
+      for (idx <- 0 to args.productArity) {
+        val name = localNames.getOrElse(idx, "")
+        if (name == "") params.add(args.productElement(idx).asInstanceOf[Object])
+        else localData.addData(name, args.productElement(idx))
+      }
+    }
+    val ret = function.evaluate(params, localData)
+    if (ret.isInstanceOf[Return]) ret.asInstanceOf[Return]
+    else throw new ExpectedError("Return is not of expected type")
+  }
+}
+
 object FunctionExampleGetFromList extends FunctionBridge[(List[Int], Int), Int] {
   def name = "Get from list"
   def parametersDesc = Seq (
