@@ -25,7 +25,7 @@ b?=1
 all:
 	@mkdir -p bin
 	@# find ./src | egrep "[.]java$$" > file.list
-	@javac -classpath $(LIBS3):src -d bin $(JFILES)
+	@javac -encoding UTF-8 -classpath $(LIBS3):src -d bin $(JFILES)
 
 scala: $(scalac)
 	@mkdir -p bin
