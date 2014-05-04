@@ -60,9 +60,9 @@ public class FunctionGetCode extends Function {
     }
 }
 
-class FunctionGetNumCode extends Function {
-    public FunctionGetNumCode() {
-        super("getnumcode", "get canonical numeric code");
+class FunctionCanNumCode extends Function {
+    public FunctionCanNumCode() {
+        super("cannumcode", "canonical numeric code of a gem");
     }
 
     public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
@@ -84,6 +84,35 @@ class FunctionGetNumCode extends Function {
         	Gem G2 = (Gem) params.get(0);
         	Gem G1 = G2.copy();
         	G1.goToCodeLabel();
+        	return G1.getNumCode();
+        }
+        return null;
+    }
+}
+
+class FunctionCurrentNumCode extends Function {
+    public FunctionCurrentNumCode() {
+        super("currentnumcode", "current numeric code of a gem");
+    }
+
+    public Object evaluate(ArrayList<Object> params, DataMap localData) throws EvaluationException {
+        try {
+            Object result = hardwork(params, localData);
+            return result;
+        } catch (EvaluationException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
+    public Object hardwork(ArrayList params, DataMap localMap) throws EvaluationException, Exception {
+        if(params.get(0) instanceof Gem ){
+        	Gem G2 = (Gem) params.get(0);
+        	Gem G1 = G2.copy();
         	return G1.getNumCode();
         }
         return null;
