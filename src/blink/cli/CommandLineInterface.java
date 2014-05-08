@@ -148,7 +148,8 @@ public class CommandLineInterface {
                              new FunctionBettiNumber(),
                              new FunctionBigons(),
                              new FunctionBainhas(),
-                             new FunctionDeepness()
+                             new FunctionDeepness(),
+                             new FunctionFibonacciGem()
         };
         for (Function f : functions) {
             _functionMap.addFunction(f.getName(), f);
