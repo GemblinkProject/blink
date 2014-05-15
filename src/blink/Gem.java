@@ -417,6 +417,12 @@ public class Gem implements Cloneable, Comparable {
 	    GemVertex[][][] ret = new GemVertex[3][][];
 	    for (int i = 0; i < 3; ++i) {
 	    	ret[i] = new GemVertex[bigons.get(i).size()][];
+	    	
+	    	Collections.sort(bigons.get(i), new Comparator<ArrayList<GemVertex>>() {
+	    		public int compare(ArrayList<GemVertex> a, ArrayList<GemVertex> b) {
+	    			return a.get(0).getLabel() - b.get(0).getLabel();
+	    		}
+	    	});
 	    	for (int j = 0; j < bigons.get(i).size(); ++j) {
 	    		ret[i][j] = new GemVertex[bigons.get(i).get(j).size()];
 	    		for (int k = 0; k < bigons.get(i).get(j).size(); ++k) {
@@ -444,6 +450,7 @@ public class Gem implements Cloneable, Comparable {
                                gist.newVertex()};
             if (v.getLabel() == 1) {
                 for (int i=0;i<4;i++) {
+
 
                     gist.setNeighbours(vvs[i], vvs[i], GistEdgeType.plus);
                     gist.setNeighbours(vvs[i], vvs[i], GistEdgeType.minus);
@@ -902,6 +909,7 @@ public class Gem implements Cloneable, Comparable {
         GemVertex v = p.getV();
         GemVertex uu = u.getNeighbour(p.getColor());
         GemVertex vv = v.getNeighbour(p.getColor());
+
 
 
         // descobrir um bigon comum às duas arestas
@@ -3872,6 +3880,7 @@ public class Gem implements Cloneable, Comparable {
 
             GemVertex g = f.getNeighbour(p[1]);
             GemVertex h = g.getNeighbour(p[3]);
+
 
             if (a.getNeighbour(p[1]) != h) // test
                 return false;
